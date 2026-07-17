@@ -2,13 +2,13 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Ulasan Permainan Catur</title>
-<meta name="description" content="Ulasan permainan catur gratis — akurasi, kesalahan, grafik evaluasi, dan kartu laporan. Impor dari Chess.com atau tempel PGN apa pun.">
-<meta property="og:title" content="Ulasan Permainan Catur">
-<meta property="og:description" content="Analisis permainan catur apa pun secara gratis — akurasi, perkiraan Elo, momen kunci.">
+<title>Ulasan Catur — ulasan permainan catur gratis</title>
+<meta name="description" content="Ulasan permainan catur gratis — akurasi, blunder, grafik evaluasi, dan laporan permainan. Impor dari Chess.com atau tempel PGN apa saja.">
+<meta property="og:title" content="Ulasan Catur — ulasan permainan catur gratis">
+<meta property="og:description" content="Berapa banyak blunder yang kamu mainkan? Analisis permainan catur apa pun secara gratis — akurasi, perkiraan Elo, momen kunci.">
 <meta property="og:type" content="website">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#1a1815">
+<meta name="theme-color" content="#262626">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,82 +18,148 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root{
-    --bg:#1e1c19; --panel:#211e1b; --panel2:#2c2825; --text:#ffffff; --muted:#b0a89e;
-    --light:#ebecd0; --dark:#739552; --accent:#d4af37; --good:#5fb35f; --bad:#e05a5a;
-    --warn:#e0b15a; --sel:#f6f669; --move:#bbcb2b88; --border:#4a4540;
+    --bg:#262626; --panel:#211e1b; --panel2:#2c2825; --panel3:#3e3a36; --border:#4a4540;
+    --text:#ffffff; --muted:#b8b2a8;
+    --light:#ddd0b2; --dark:#7d5a38;
+    --accent:#d4af37; --accent2:#c89f2f;
+    --good:#5fb35f; --bad:#e05a5a; --warn:#e0b15a;
+    --sel:#3cbe5a; --move:rgba(212,175,55,.35);
+    --input-bg:#100f0e;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:'Georgia','Segoe UI',system-ui,serif;background:var(--bg);color:var(--text);}
-  header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-  header h1{font-size:18px;margin:0;font-weight:700;font-style:italic}
-  header .status{font-size:12px;color:var(--muted);margin-left:auto}
+  body{
+    margin:0;font-family:'Georgia','Times New Roman',serif;color:var(--text);
+    background:radial-gradient(1100px 520px at 72% -10%, #3a2f1c 0%, transparent 60%),
+               linear-gradient(180deg,#262626,#201f1f);
+    min-height:100vh;
+  }
+  header{
+    position:sticky;top:0;z-index:50;background:rgba(38,36,34,.86);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+    padding:12px 22px;display:flex;align-items:center;gap:12px;
+  }
+  header h1{font-size:19px;margin:0;font-weight:700;font-style:italic;letter-spacing:.2px}
+  header h1 .logo-emoji{-webkit-text-fill-color:initial}
+  header h1 .logo-text{
+    background:linear-gradient(90deg,#d4af37 0%,#f0d060 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header .status{
+    font-size:11px;color:var(--muted);margin-left:auto;background:var(--panel2);
+    border:1px solid var(--border);padding:4px 12px;border-radius:999px;font-weight:600;
+  }
   .wrap{display:flex;gap:22px;padding:18px;align-items:flex-start;justify-content:center}
-  .stage{flex:1 1 auto;display:flex;justify-content:center;min-width:0;position:sticky;top:14px}
+  .stage{flex:1 1 auto;display:flex;justify-content:center;min-width:0;position:sticky;top:76px}
   .left{display:flex;gap:12px;--bsize:clamp(320px, min(86vh, calc(100vw - 560px)), 900px)}
-  #evalbar{width:34px;height:var(--bsize);background:#100f0e;border-radius:4px;overflow:hidden;position:relative;flex:0 0 auto}
-  #evalfill{position:absolute;bottom:0;left:0;width:100%;background:#f0f0f0;transition:height .3s ease}
-  #evaltext{position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:800;
-            color:#fff;background:rgba(0,0,0,.62);padding:1px 4px;border-radius:4px;z-index:2;white-space:nowrap}
+  #evalbar{
+    width:34px;height:var(--bsize);background:var(--input-bg);border-radius:3px;overflow:hidden;
+    position:relative;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+  }
+  #evalfill{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(180deg,#f4f0e6,#ddd0b2);transition:height .3s ease}
+  #evaltext{
+    position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:800;
+    color:#fff;background:rgba(16,15,14,.72);padding:1px 4px;border-radius:4px;z-index:2;white-space:nowrap;
+  }
   #evaltext.neg{top:auto;bottom:4px}
-  #board{width:var(--bsize);height:var(--bsize);display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
-         border-radius:6px;overflow:hidden;box-shadow:0 8px 30px #000a;flex:0 0 auto;user-select:none}
-  .sq{position:relative;display:flex;align-items:center;justify-content:center;font-size:calc(var(--bsize)/8*0.82);line-height:1;cursor:pointer}
+  #board{
+    width:var(--bsize);height:var(--bsize);display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);
+    border-radius:4px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+    flex:0 0 auto;user-select:none;touch-action:none;
+  }
+  .sq{
+    position:relative;display:flex;align-items:center;justify-content:center;
+    font-size:calc(var(--bsize)/8*0.82);line-height:1;cursor:pointer;
+    font-family:'DejaVu Sans','Segoe UI Symbol',Arial,sans-serif;
+  }
   .sq.l{background:var(--light)} .sq.d{background:var(--dark)}
-  .sq .coord{position:absolute;font-size:10px;font-weight:700;opacity:.55}
+  .sq .coord{position:absolute;font-size:10px;font-weight:800;opacity:.6}
   .sq .coord.file{bottom:1px;right:3px} .sq .coord.rank{top:1px;left:3px}
   .sq.sel{background:var(--sel)!important}
   .sq.lastmove::after{content:"";position:absolute;inset:0;background:var(--move)}
-  .sq .dot{position:absolute;width:30%;height:30%;border-radius:50%;background:#0003;z-index:3}
-  .sq .ring{position:absolute;inset:6%;border-radius:50%;border:5px solid #0003;z-index:3}
-  .piece{z-index:4;position:relative;text-shadow:0 1px 2px #0006}
-  .piece.w{color:#fff;-webkit-text-stroke:1.4px #333}
-  .piece.b{color:#222}
-  #board{touch-action:none}
-  .drag-clone{position:fixed;display:flex;align-items:center;justify-content:center;
-              pointer-events:none;z-index:1000;line-height:1;filter:drop-shadow(0 4px 6px #000a)}
-  .anim-piece{position:fixed;display:flex;align-items:center;justify-content:center;margin:0;
-              pointer-events:none;z-index:900;line-height:1;
-              transition:transform .18s cubic-bezier(.2,.7,.3,1)}
+  .sq .dot{position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(20,20,20,.32);z-index:3}
+  .sq .ring{position:absolute;inset:6%;border-radius:50%;border:5px solid rgba(20,20,20,.32);z-index:3}
+  .piece{z-index:4;position:relative;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .piece.w{color:#fbf8f0;-webkit-text-stroke:1.4px #3a332a}
+  .piece.b{color:#241f18}
+  .drag-clone{
+    position:fixed;display:flex;align-items:center;justify-content:center;
+    pointer-events:none;z-index:1000;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6));
+  }
+  .anim-piece{
+    position:fixed;display:flex;align-items:center;justify-content:center;margin:0;
+    pointer-events:none;z-index:900;line-height:1;
+    transition:transform .18s cubic-bezier(.2,.7,.3,1);
+  }
   #arrowsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
   .boardbox{position:relative}
-  .panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;width:460px;flex:0 0 460px}
+  .panel{
+    background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border);
+    border-radius:12px;padding:16px;width:460px;flex:0 0 460px;box-shadow:0 12px 40px rgba(0,0,0,.6);
+  }
   @media(max-width:980px){
     .wrap{flex-direction:column;align-items:center}
     .stage{position:static}
     .left{--bsize:min(92vw, 78vh)}
     .panel{flex:0 0 auto;width:100%;max-width:760px}
   }
-  .tabs{display:flex;gap:4px;margin-bottom:12px}
-  .tabs button{flex:1;background:var(--panel2);color:var(--muted);border:none;padding:8px;border-radius:6px;cursor:pointer;font-size:13px}
-  .tabs button.active{background:var(--accent);color:#1a1815;font-weight:700}
+  .tabs{display:flex;gap:4px;margin-bottom:12px;background:var(--panel2);padding:4px;border-radius:10px}
+  .tabs button{
+    flex:1;background:transparent;color:var(--muted);border:none;padding:8px;border-radius:7px;
+    cursor:pointer;font-size:13px;font-weight:600;font-family:'Georgia',serif;transition:color .15s;
+  }
+  .tabs button:hover{color:var(--text)}
+  .tabs button:active{transform:scale(0.96)}
+  .tabs button.active{
+    background:linear-gradient(160deg,#d4af37,#c89f2f);color:#2c2825;
+    box-shadow:0 2px 12px rgba(212,175,55,.35);
+  }
   .tabpane{display:none} .tabpane.active{display:block}
-  textarea{width:100%;height:120px;background:#100f0e;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px;font-family:monospace;font-size:12px;resize:vertical}
-  input[type=text]{width:100%;background:#100f0e;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px;font-family:monospace;font-size:12px}
-  button.btn{background:linear-gradient(160deg,#d4af37,#c89f2f);color:#1a1815;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin-top:8px;font-family:'Georgia',serif}
-  button.btn.sec{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
-  button.btn:hover{filter:brightness(1.1)}
+  textarea{
+    width:100%;height:120px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);
+    border-radius:6px;padding:8px;font-family:'Courier New',monospace;font-size:12px;resize:vertical;
+  }
+  input[type=text]{
+    width:100%;background:var(--input-bg);color:var(--text);border:1px solid var(--border);
+    border-radius:6px;padding:8px;font-family:'Courier New',monospace;font-size:12px;
+  }
+  textarea:focus,input[type=text]:focus,select:focus{
+    outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(212,175,55,.25);
+  }
+  button.btn{
+    background:linear-gradient(160deg,#d4af37,#c89f2f);color:#2c2825;border:none;padding:8px 12px;
+    border-radius:8px;cursor:pointer;font-size:13px;margin-top:8px;font-weight:700;font-family:'Georgia',serif;
+    box-shadow:0 2px 12px rgba(212,175,55,.3);transition:transform .12s,box-shadow .12s;
+  }
+  button.btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(212,175,55,.45)}
+  button.btn:active{transform:scale(0.97)}
+  button.btn.sec{background:var(--panel3);color:var(--text);border:1px solid var(--border);box-shadow:none}
+  button.btn.sec:hover{border-color:var(--accent);transform:none}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .nav{display:flex;gap:6px;margin:12px 0}
-  .nav button{flex:1;background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px;border-radius:6px;cursor:pointer;font-size:16px}
-  .nav button:hover{background:var(--accent);color:#1a1815}
-  .bestmove{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:10px;margin:10px 0;font-size:13px}
+  .nav button{
+    flex:1;background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px;
+    border-radius:8px;cursor:pointer;font-size:16px;transition:background .15s,border-color .15s;
+  }
+  .nav button:hover{background:linear-gradient(160deg,#d4af37,#c89f2f);border-color:transparent;color:#2c2825}
+  .nav button:active{transform:scale(0.94)}
+  .bestmove{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px;margin:10px 0;font-size:13px}
   .bestmove b{color:var(--accent)}
   .moves{max-height:200px;overflow-y:auto;font-size:13px;line-height:1.9;margin-top:6px}
   #moveList{max-height:none;overflow:visible}
   .moves .mv{display:inline-block;padding:1px 6px;border-radius:4px;cursor:pointer;margin:1px}
-  .moves .mv:hover{background:var(--panel2)}
-  .moves .mv.cur{background:var(--accent);color:#1a1815;font-weight:700}
+  .moves .mv:hover{background:var(--panel3)}
+  .moves .mv.cur{background:linear-gradient(160deg,#d4af37,#c89f2f);color:#2c2825}
   .moves .num{color:var(--muted);margin-left:6px}
   .tag{display:inline-block;font-size:11px;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700}
   .tag.blunder{background:var(--bad)} .tag.mistake{background:var(--warn);color:#222}
   .tag.inacc{background:#6a85c2} .tag.best{background:var(--good)}
   label.fld{font-size:12px;color:var(--muted);display:block;margin:8px 0 2px}
   .small{font-size:12px;color:var(--muted)}
-  #progress{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:8px;display:none}
-  #progressbar{height:100%;width:0;background:var(--accent);transition:width .2s}
-  select{background:#100f0e;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px}
-  .acc-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px}
-  .acc-title{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px;text-align:center;letter-spacing:.5px}
+  #progress{height:6px;background:var(--panel3);border-radius:4px;overflow:hidden;margin-top:8px;display:none}
+  #progressbar{height:100%;width:0;background:linear-gradient(90deg,#d4af37,#c89f2f);transition:width .2s}
+  select{background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px;font-family:'Courier New',monospace}
+  .acc-box{background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+  .acc-title{font-size:10px;color:var(--muted);font-weight:700;margin-bottom:6px;text-align:center;letter-spacing:1px;text-transform:uppercase;font-family:'Courier New',monospace}
   .acc-grid{display:flex;gap:10px}
   .acc-cell{flex:1;text-align:center}
   .acc-label{font-size:12px;color:var(--muted)}
@@ -103,42 +169,50 @@
   .graph-box{margin-bottom:10px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
   .graph-box svg{display:block;width:100%;height:96px;cursor:pointer}
   .hl-box{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-  .hl-chip{display:inline-flex;align-items:center;gap:5px;background:var(--panel2);border:1px solid var(--border);border-radius:6px;
-           padding:4px 8px;font-size:12px;cursor:pointer;font-weight:600}
-  .hl-chip:hover{background:#3e3a36}
-  .km-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:10px}
-  .km-title{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:4px;letter-spacing:.5px}
-  .km-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 4px;
-          border-radius:5px;font-size:12px;cursor:pointer}
-  .km-row:hover{background:#3e3a36}
+  .hl-chip{
+    display:inline-flex;align-items:center;gap:5px;background:var(--panel2);border:1px solid var(--border);
+    border-radius:7px;padding:4px 8px;font-size:12px;cursor:pointer;font-weight:600;
+  }
+  .hl-chip:hover{background:var(--panel3)}
+  .km-box{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:10px}
+  .km-title{font-size:10px;color:var(--muted);font-weight:700;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;font-family:'Courier New',monospace}
+  .km-row{
+    display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 4px;
+    border-radius:5px;font-size:12px;cursor:pointer;
+  }
+  .km-row:hover{background:var(--panel3)}
   .km-mv{font-weight:700;white-space:nowrap}
   .km-desc{color:var(--muted);text-align:right}
   .review-summary{display:flex;gap:10px;margin-bottom:10px}
-  .rs-col{flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+  .rs-col{flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:8px 10px}
   .rs-head{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border)}
   .rs-head .wb{margin-left:auto;display:flex;gap:6px;font-size:11px;color:var(--muted)}
   .rs-head .wb span{width:28px;text-align:center}
   .rs-row{display:grid;grid-template-columns:1fr 28px 28px;align-items:center;font-size:12px;padding:3px 0}
   .rs-row .ic{display:inline-flex;align-items:center;gap:7px}
-  .rs-badge{min-width:16px;height:16px;padding:0 3px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex:0 0 auto}
-  .movebadge{position:absolute;border-radius:50%;padding:0;
+  .rs-badge{
+    min-width:16px;height:16px;padding:0 3px;border-radius:50%;display:inline-flex;align-items:center;
+    justify-content:center;font-size:9px;font-weight:800;color:#fff;flex:0 0 auto;
+  }
+  .movebadge{
+    position:absolute;border-radius:50%;padding:0;
     display:flex;align-items:center;justify-content:center;
     font-weight:800;color:#fff;line-height:1;
-    border:3px solid #1e1c19;z-index:6;box-shadow:0 2px 8px #000a}
-  .sq.wrong{background:var(--bad)!important}
+    border:3px solid var(--bg);z-index:6;box-shadow:0 2px 8px rgba(0,0,0,.6);
+  }
   .src{display:inline-block;font-size:9px;font-weight:800;padding:1px 4px;border-radius:4px;vertical-align:middle;color:#fff}
   .src-cc{background:#6b9b37} .src-li{background:#7b61a8}
   .credits{text-align:center;color:var(--muted);font-size:11px;padding:16px 0 22px}
   .credits a{color:var(--muted)}
   .credits a:hover{color:var(--accent)}
   *::-webkit-scrollbar{width:10px;height:10px}
-  *::-webkit-scrollbar-thumb{background:#4a4540;border-radius:8px;border:2px solid #12141f}
+  *::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;border:2px solid var(--bg)}
   *::-webkit-scrollbar-track{background:transparent}
 </style>
 </head>
 <body>
 <header>
-  <h1>Ulasan Permainan Catur</h1>
+  <h1><span class="logo-emoji">♟</span> <span class="logo-text">Ulasan Catur</span></h1>
   <span class="status" id="engineStatus">Memuat mesin…</span>
 </header>
 
@@ -162,6 +236,7 @@
       <button data-tab="review">Ulasan</button>
     </div>
 
+    <!-- analisis (selalu terlihat) -->
     <div class="bestmove" id="analysisBox">
       <div>Mesin: <b id="bestText">—</b> <span id="depthText" class="small"></span></div>
       <div id="pvText" class="small" style="margin-top:4px"></div>
@@ -174,7 +249,7 @@
         </select>
       </label>
       <label class="small"><input type="checkbox" id="autoAnalyze" checked> Analisis otomatis</label>
-      <label class="small"><input type="checkbox" id="showArrow" checked> Panah mesin (top 3)</label>
+      <label class="small"><input type="checkbox" id="showArrow" checked> Panah mesin (3 teratas)</label>
     </div>
 
     <div class="nav">
@@ -188,18 +263,18 @@
 
     <!-- MAIN -->
     <div class="tabpane active" id="tab-play">
-      <p class="small">Klik sebuah bidak, lalu klik tujuannya. Mesin menganalisis setiap posisi secara otomatis.</p>
+      <p class="small">Klik sebuah bidak, lalu klik kotak tujuannya. Mesin akan menganalisis setiap posisi secara otomatis.</p>
       <button class="btn sec" id="newGame">Permainan baru</button>
       <button class="btn sec" id="undoMove">Batalkan</button>
     </div>
 
-    <!-- IMPORT -->
+    <!-- IMPOR -->
     <div class="tabpane" id="tab-chesscom">
       <label class="fld">♟ Nama pengguna Chess.com</label>
       <input type="text" id="ccUserCc" placeholder="hikaru  (atau chess.com/member/hikaru)">
       <label class="fld" style="margin-top:8px">🔶 Nama pengguna Lichess</label>
       <input type="text" id="ccUserLi" placeholder="thibault  (atau lichess.org/@/thibault)">
-      <p class="small" style="margin:6px 0 0">Isi salah satu atau keduanya — permainan dari kedua akun digabungkan, terbaru di atas.</p>
+      <p class="small" style="margin:6px 0 0">Isi salah satu atau keduanya — permainan dari kedua akun akan digabung, terbaru lebih dulu.</p>
       <div class="row" style="margin-top:8px">
         <label class="small">Bulan Chess.com
           <select id="ccMonth"><option value="">terbaru</option></select>
@@ -227,10 +302,10 @@
       <div class="small" id="fenOut" style="margin-top:8px;word-break:break-all"></div>
     </div>
 
-    <!-- REVIEW -->
+    <!-- ULASAN -->
     <div class="tabpane" id="tab-review">
-      <p class="small">Muat permainan dari tab <b>Impor</b> atau <b>PGN</b> terlebih dahulu, lalu pindai. Setiap langkah mendapat lencana kualitas (ditampilkan di papan juga).</p>
-      <label class="small">Kedalaman pindai
+      <p class="small">Muat permainan dari tab <b>Impor</b> atau <b>PGN</b> terlebih dahulu, lalu pindai. Setiap langkah akan mendapat lencana kualitas (juga ditampilkan di papan).</p>
+      <label class="small">Kedalaman pemindaian
         <select id="reviewDepth"><option value="14">14 (cepat)</option><option value="16" selected>16 (seimbang)</option><option value="20">20 (dalam)</option><option value="25">25 (maksimal)</option></select>
       </label>
       <button class="btn" id="runReview">Pindai permainan</button>
@@ -243,18 +318,19 @@
 <footer class="credits">
   Mesin: <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noopener">Stockfish.js</a> (GPL)
   · <a href="https://github.com/jhlywa/chess.js" target="_blank" rel="noopener">chess.js</a>
-  · Data permainan via Chess.com &amp; Lichess API publik
+  · Data permainan melalui API publik Chess.com &amp; Lichess
 </footer>
 
 <script src="chess.min.js"></script>
 <script>
-
-/* ---------- Mesin (Stockfish via cross-origin worker) ---------- */
+/* ---------- Mesin (Stockfish melalui worker cross-origin) ---------- */
 let engine=null, engineReady=false;
-const engineQueue=[];
+const engineQueue=[]; // {fen, depth, onInfo, onDone}
 let current=null;
 
 const SF_URL='https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
+/* Preferensi mesin: Stockfish 18 NNUE (wasm lokal) → Stockfish 10 (wasm lokal)
+   → blob worker asm.js dari CDN (untuk file:// yang memblokir worker lokal). */
 let SF_MODE=(location.protocol==='http:'||location.protocol==='https:')?'nnue-local':'asm-cdn';
 function makeSF(){
   if(SF_MODE==='nnue-local'){
@@ -271,31 +347,35 @@ function initEngine(){
   try{
     engine=makeSF();
   }catch(e){ setStatus('Mesin gagal dimuat'); return; }
+  // jika mesin yang dipilih tidak melaporkan siap dengan cepat, turunkan ke rantai fallback
   clearTimeout(engineInitTimer);
   engineInitTimer=setTimeout(()=>{
     if(engineReady)return;
     if(SF_MODE==='nnue-local')SF_MODE='wasm-local';
     else if(SF_MODE==='wasm-local')SF_MODE='asm-cdn';
     else return;
-    console.warn('mesin lambat memulai — beralih ke '+SF_MODE);
+    console.warn('engine slow to init — falling back to '+SF_MODE);
     try{engine&&engine.terminate();}catch(e){} engine=null; initEngine();
   }, 8000);
   engine.onmessage=onEngineMsg;
-  engine.onerror=(e)=>{ console.error('kesalahan mesin',e.message||e); setStatus('Kesalahan mesin — memuat ulang…'); recoverEngine(); };
+  engine.onerror=(e)=>{ console.error('engine error',e.message||e); setStatus('Terjadi kesalahan pada mesin — memuat ulang…'); recoverEngine(); };
   engine.postMessage('uci');
-  engine.postMessage('setoption name MultiPV value 3');
+  engine.postMessage('setoption name MultiPV value 3'); // 3 baris teratas untuk tampilan panah
   engine.postMessage('isready');
 }
 function recoverEngine(){
+  // worker crash: hentikan dan reset agar aplikasi tidak macet
   try{engine&&engine.terminate();}catch(e){}
   clearTimeout(watchdog);
   engineReady=false; engine=null;
+  // selesaikan apa pun yang sedang berjalan agar await tidak menggantung
   const inflight=current; current=null; engineQueue.length=0;
   if(inflight&&inflight.onDone)inflight.onDone(null,inflight.last||{},inflight.lastByPv||{});
   setTimeout(initEngine,300);
 }
 
-/* ---------- Lichess cloud eval ---------- */
+/* ---------- Evaluasi cloud Lichess (evaluasi cache dalam untuk posisi buku) ---------- */
+/* Mengembalikan {ev, bm, second, depth} dalam cp sudut pandang Putih, atau null jika tidak tersedia. */
 async function cloudEval(fen, timeoutMs){
   const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),timeoutMs||2000);
   try{
@@ -304,12 +384,13 @@ async function cloudEval(fen, timeoutMs){
     const j=await r.json();
     if(!j.pvs||!j.pvs.length) return null;
     const val=pv=> pv.mate!==undefined ? (pv.mate>0?100000:-100000) : (pv.cp|0);
-    const norm=u=>({e1h1:'e1g1',e1a1:'e1c1',e8h8:'e8g8',e8a8:'e8c8'}[u]||u);
+    const norm=u=>({e1h1:'e1g1',e1a1:'e1c1',e8h8:'e8g8',e8a8:'e8c8'}[u]||u); // notasi rokade lichess
     const bm=norm((j.pvs[0].moves||'').split(' ')[0]||'');
     return { ev:val(j.pvs[0]), bm:bm||null, second:j.pvs[1]!==undefined?val(j.pvs[1]):null, depth:j.depth };
   }catch(e){ return null; }
   finally{ clearTimeout(t); }
 }
+/* Mengambil evaluasi cloud untuk `count` posisi pertama; mengembalikan array sparse. */
 async function cloudPrefetch(fens, count, deadlineMs){
   const n=Math.min(count,fens.length);
   const out=new Array(fens.length);
@@ -326,21 +407,28 @@ async function cloudPrefetch(fens, count, deadlineMs){
   return out;
 }
 
-/* ---------- Parallel analysis pool ---------- */
+/* ---------- Kumpulan analisis paralel (dipakai oleh Ulasan Permainan) ---------- */
+/* Menjalankan beberapa worker Stockfish dan menganalisis semua FEN secara bersamaan.
+   Mengembalikan array {ev, bm, second} (ev/second = centipawn sudut pandang Putih).
+   `preset`: array sparse hasil yang sudah diketahui (evaluasi cloud, dsb). */
 function analyzePool(fens, depth, mpv, onProgress, preset){
   const total=fens.length;
-  const results=new Array(total);
+  const results=new Array(total); // undefined = belum selesai
   const requeue=[];
   let next=0, filled=0;
   const workers=new Set();
   const POOL=Math.max(1, Math.min((navigator.hardwareConcurrency||2)-1, 12, total));
+
+  // isi awal dari preset (evaluasi cloud dalam)
   if(preset)for(let i=0;i<total;i++){ if(preset[i]){results[i]=preset[i];filled++;} }
+  // isi awal posisi akhir (tidak perlu mesin)
   for(let i=0;i<total;i++){
     if(results[i])continue;
     try{ const gg=new Chess(fens[i]);
       if(gg.game_over()){ results[i]={ev:gg.in_checkmate()?(gg.turn()==='w'?-100000:100000):0, bm:null, second:null}; filled++; }
     }catch(e){}
   }
+
   return new Promise(resolve=>{
     if(filled>=total){ onProgress&&onProgress(filled,total); resolve(results); return; }
     function record(i,val){ if(results[i]!==undefined)return false; results[i]=val; filled++; onProgress&&onProgress(filled,total); return true; }
@@ -349,14 +437,14 @@ function analyzePool(fens, depth, mpv, onProgress, preset){
       let i=-1;
       if(requeue.length) i=requeue.shift();
       else { while(next<total && results[next]!==undefined) next++; if(next<total) i=next++; }
-      if(i<0){ try{w.terminate();}catch(e){} workers.delete(w); return; }
+      if(i<0){ try{w.terminate();}catch(e){} workers.delete(w); return; } // tidak ada pekerjaan tersisa untuk worker ini
       w.__idx=i; w.__byPv={};
       w.postMessage('position fen '+fens[i]);
       w.postMessage('go depth '+depth);
       clearTimeout(w.__wd);
-      w.__wd=setTimeout(()=>{
+      w.__wd=setTimeout(()=>{ // worker macet: antrekan ulang posisi ini dan ganti workernya
         requeue.push(i); try{w.terminate();}catch(e){} workers.delete(w); spawn();
-      }, 15000+Math.max(0,depth-16)*4000);
+      }, 15000+Math.max(0,depth-16)*4000); // pencarian dalam mendapat waktu lebih longgar
     }
     function handler(w){ return (e)=>{
       const line=typeof e.data==='string'?e.data:'';
@@ -383,7 +471,7 @@ function analyzePool(fens, depth, mpv, onProgress, preset){
       workers.add(w);
       w.postMessage('uci');
       w.postMessage('setoption name MultiPV value '+mpv);
-      w.postMessage('isready');
+      w.postMessage('isready'); // -> readyok memicu feed pertama
     }
     for(let k=0;k<POOL;k++) spawn();
   });
@@ -405,14 +493,14 @@ function onEngineMsg(e){
     if(idx===1)current.last=m;
     current.lastByPv=current.lastByPv||{};
     current.lastByPv[idx]=m;
-    armWatchdog();
+    armWatchdog(); // ada kemajuan; reset timer keheningan
     if(current.onInfo)current.onInfo(m,current.lastByPv,idx);
   } else if(line.startsWith('bestmove')){
     finishCurrent(line.split(/\s+/)[1]);
   }
 }
 let watchdog=null;
-function armWatchdog(){ clearTimeout(watchdog); watchdog=setTimeout(()=>{ console.warn('mesin diam — lanjutkan'); finishCurrent(null); }, 14000); }
+function armWatchdog(){ clearTimeout(watchdog); watchdog=setTimeout(()=>{ console.warn('engine silent — moving on'); finishCurrent(null); }, 14000); }
 function finishCurrent(bm){
   if(!current)return;
   clearTimeout(watchdog);
@@ -421,6 +509,7 @@ function finishCurrent(bm){
   pump();
 }
 function analyze(fen,depth,onInfo,onDone){
+  // ganti antrean yang tertunda dengan analisis otomatis; hanya simpan permintaan terbaru
   engineQueue.length=0;
   engineQueue.push({fen,depth,onInfo,onDone});
   if(current){engine.postMessage('stop');} else pump();
@@ -435,7 +524,7 @@ function pump(){
 }
 function setStatus(s){document.getElementById('engineStatus').textContent=s;}
 
-/* ---------- Suara langkah (klik kayu sintetis, tanpa file) ---------- */
+/* ---------- Suara langkah (klik kayu sintetis, tanpa berkas audio) ---------- */
 let audioCtx=null, noiseBuf=null;
 function getNoise(){
   if(noiseBuf)return noiseBuf;
@@ -445,8 +534,10 @@ function getNoise(){
   for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
   return noiseBuf;
 }
+/* Ketukan kayu = transien noise tajam + beberapa mode resonansi teredam (sintesis modal) */
 function tap({t=0,vol=0.5,base=420,partials=[1,2.0,3.1],decay=0.085,attackFilt=2200,attackVol=0.5}={}){
   const now=audioCtx.currentTime+t;
+  // transien noise pendek (serangan "ketukan")
   const src=audioCtx.createBufferSource(); src.buffer=getNoise();
   const bp=audioCtx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=attackFilt; bp.Q.value=1.2;
   const ng=audioCtx.createGain();
@@ -454,11 +545,12 @@ function tap({t=0,vol=0.5,base=420,partials=[1,2.0,3.1],decay=0.085,attackFilt=2
   ng.gain.exponentialRampToValueAtTime(0.0006,now+0.018);
   src.connect(bp); bp.connect(ng); ng.connect(audioCtx.destination);
   src.start(now); src.stop(now+0.03);
+  // mode kayu resonan: partial sinus yang meluruh
   partials.forEach((mult,i)=>{
     const o=audioCtx.createOscillator(), g=audioCtx.createGain();
     o.type='sine'; o.frequency.value=base*mult;
-    const amp=vol*(i===0?0.9:0.45/i);
-    const d=decay*(i===0?1:0.7/Math.sqrt(i+1));
+    const amp=vol*(i===0?0.9:0.45/i); // partial lebih tinggi lebih pelan
+    const d=decay*(i===0?1:0.7/Math.sqrt(i+1)); // partial lebih tinggi meluruh lebih cepat
     g.gain.setValueAtTime(amp,now);
     g.gain.exponentialRampToValueAtTime(0.0006,now+d);
     o.connect(g); g.connect(audioCtx.destination);
@@ -470,25 +562,29 @@ function sfxSynth(type){
     audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
     if(audioCtx.state==='suspended')audioCtx.resume();
     switch(type){
+      // base lebih rendah + decay lebih panjang = "clack" lebih berat
       case 'capture': tap({vol:0.6,base:300,partials:[1,2.1,3.0,4.2],decay:0.12,attackFilt:1700,attackVol:0.7}); break;
       case 'castle':  tap({vol:0.5,base:420,decay:0.08}); tap({t:0.085,vol:0.45,base:400,decay:0.08}); break;
       case 'check':   tap({vol:0.5,base:440,decay:0.09}); tap({t:0.0,vol:0.2,base:1200,partials:[1,2.4],decay:0.05,attackVol:0.2}); break;
       case 'promote': tap({vol:0.5,base:430,decay:0.09}); tap({t:0.06,vol:0.3,base:880,partials:[1,2.5],decay:0.07,attackVol:0.2}); break;
       case 'end':     tap({vol:0.5,base:240,partials:[1,2.0,3.0],decay:0.16,attackFilt:1400}); tap({t:0.13,vol:0.45,base:200,decay:0.18}); break;
-      default:        tap({vol:0.5,base:430,partials:[1,2.0,3.1],decay:0.075,attackFilt:2200});
+      default:        tap({vol:0.5,base:430,partials:[1,2.0,3.1],decay:0.075,attackFilt:2200}); // langkah
     }
   }catch(e){}
 }
 
+/* ---------- Berkas suara dari ./sounds/ (nama gaya chess.com) ---------- */
+/* Tiap jenis mendapat kumpulan kecil elemen <audio> agar langkah cepat bisa tumpang tindih.
+   Berkas yang hilang/gagal jatuh kembali ke ketukan sintetis. */
 const SOUND_MAP={
   move:'sounds/move-self.mp3',
   capture:'sounds/capture.mp3',
   castle:'sounds/castle.mp3',
   check:'sounds/move-check.mp3',
   promote:'sounds/promote.mp3',
-  end:'sounds/move-check.mp3',
+  end:'sounds/move-check.mp3', // tidak ada suara akhir khusus
 };
-const soundBank={};
+const soundBank={}; // jenis -> {pool:[Audio], idx, ok}
 function initSounds(){
   for(const [type,src] of Object.entries(SOUND_MAP)){
     const bank={pool:[],idx:0,ok:false};
@@ -507,7 +603,7 @@ function sfx(type){
   try{
     const a=bank.pool[bank.idx++%bank.pool.length];
     a.pause(); a.currentTime=0; a.volume=0.9;
-    a.playbackRate=(type==='end')?0.85:1;
+    a.playbackRate=(type==='end')?0.85:1; // lebih dalam untuk skakmat
     const p=a.play(); if(p&&p.catch)p.catch(()=>{});
   }catch(e){ sfxSynth(type); }
 }
@@ -522,26 +618,27 @@ function sfxFor(mv){
 
 /* ---------- Status permainan ---------- */
 const game=new Chess();
-let history=[];
-let ply=0;
-let loadedMode=false;
+let history=[];      // daftar langkah SAN yang dimuat (untuk navigasi pgn)
+let ply=0;           // indeks posisi saat ini ketika menavigasi permainan yang dimuat
+let loadedMode=false;// true saat melihat permainan yang diimpor
 let flipped=false;
-let selected=null;
-let excursionPly=null;
-let liveAnal=null;
-let pendingJudge=null;
-let liveBadge=null;
-let reviewData=null;
-let reviewAccuracy=null;
-let reviewEvals=null;
-let reviewBookHits=null;
-let gameMeta=null;
+let selected=null;   // kotak yang dipilih
+let excursionPly=null; // ply saat pengguna meninggalkan jalur permainan untuk mencoba langkah sendiri
+let liveAnal=null;     // data mesin terbaru untuk posisi saat ini {fen, evW, best, secondEvW}
+let pendingJudge=null; // pengguna baru saja melangkah; klasifikasikan setelah analisis posisi baru selesai
+let liveBadge=null;    // {sq, cat} lencana kualitas untuk langkah yang dicoba pengguna
+let reviewData=null; // analisis per-ply
+let reviewAccuracy=null; // {w, b} akurasi permainan %
+let reviewEvals=null;    // cp sudut pandang Putih per posisi (plies+1)
+let reviewBookHits=null; // per posisi: true jika ditemukan di cloud lichess (evaluasi buku dalam)
+let gameMeta=null;       // {opening, eco, bookPlies}
 
 const FILES=['a','b','c','d','e','f','g','h'];
 const GLYPH={p:'♟',n:'♞',b:'♝',r:'♜',q:'♛',k:'♚'};
 
 /* ---------- Render papan ---------- */
 const boardEl=document.getElementById('board');
+/* Lencana kualitas di sudut, ukurannya diambil dari kotak yang benar-benar dirender (gaya chess.com). */
 function boardBadge(cell,meta){
   const cs=boardEl.getBoundingClientRect().width/8;
   const bs=Math.max(18,Math.round(cs*0.44));
@@ -558,7 +655,7 @@ function boardBadge(cell,meta){
 }
 function render(){
   boardEl.innerHTML='';
-  const board=game.board();
+  const board=game.board(); // [rank8..rank1][file a..h]
   const last=game.history({verbose:true}).slice(-1)[0];
   const order=flipped? [...Array(8).keys()].reverse():[...Array(8).keys()];
   const fileOrder=flipped?[...Array(8).keys()].reverse():[...Array(8).keys()];
@@ -578,12 +675,14 @@ function render(){
       }
       if(last && (last.from===sqName||last.to===sqName)) sq.classList.add('lastmove');
       if(selected===sqName) sq.classList.add('sel');
+      // koordinat
       if((flipped?r===0:r===7)){const c=document.createElement('span');c.className='coord file';c.textContent=FILES[f];sq.appendChild(c);}
       if((flipped?f===7:f===0)){const c=document.createElement('span');c.className='coord rank';c.textContent=8-r;sq.appendChild(c);}
       sq.addEventListener('pointerdown',(e)=>onSquarePointerDown(e,sqName));
       boardEl.appendChild(sq);
     }
   }
+  // titik langkah legal untuk kotak terpilih
   if(selected){
     const moves=game.moves({square:selected,verbose:true});
     for(const mv of moves){
@@ -591,22 +690,26 @@ function render(){
       if(target){const d=document.createElement('span');d.className=mv.captured?'ring':'dot';target.appendChild(d);}
     }
   }
+  // lencana kualitas langkah yang membentuk posisi saat ini (setelah Ulasan)
   if(reviewData && loadedMode && ply>0 && reviewData[ply-1] && last){
     const meta=CATS[reviewData[ply-1].cat];
     const cell=boardEl.querySelector(`[data-sq="${last.to}"]`);
     if(meta && cell) boardBadge(cell,meta);
   }
+  // lencana penilaian langsung untuk langkah yang baru dicoba pengguna (mode main / eksplorasi)
   if(liveBadge && !loadedMode){
     const meta=CATS[liveBadge.cat];
     const cell=boardEl.querySelector(`[data-sq="${liveBadge.sq}"]`);
     if(meta && cell) boardBadge(cell,meta);
   }
+  // "Kembali ke permainan" hanya muncul saat mencoba langkah sendiri di luar permainan yang dimuat
   const rg=document.getElementById('returnGame');
   if(rg)rg.style.display=(fullHistory&&excursionPly!==null)?'block':'none';
   updateFenOut();
 }
 
-/* ---------- Animasi bidak ---------- */
+/* ---------- Animasi gerakan bidak (geser, seperti chess.com/lichess) ---------- */
+/* Menerbangkan klon dari fromSq ke toSq sementara bidak asli (sudah dirender di toSq) disembunyikan. */
 function animatePiece(fromSq,toSq){
   const toCell=boardEl.querySelector(`[data-sq="${toSq}"]`);
   const fromCell=boardEl.querySelector(`[data-sq="${fromSq}"]`);
@@ -623,16 +726,18 @@ function animatePiece(fromSq,toSq){
   requestAnimationFrame(()=>{ c.style.transform=`translate(${b.left-a.left}px,${b.top-a.top}px)`; });
   setTimeout(()=>{ c.remove(); pieceEl.style.visibility=''; },200);
 }
+/* Animasikan objek langkah verbose chess.js setelah render(); reverse=true menggesernya mundur (undo/nav-back). */
 function animateMoveObj(mv,reverse){
   if(!mv)return;
   animatePiece(reverse?mv.to:mv.from, reverse?mv.from:mv.to);
-  if(mv.flags&&(mv.flags.includes('k')||mv.flags.includes('q'))){
+  if(mv.flags&&(mv.flags.includes('k')||mv.flags.includes('q'))){ // rokade: benteng juga bergeser
     const rank=mv.color==='w'?'1':'8';
     const rf=(mv.flags.includes('k')?'h':'a')+rank;
     const rt=(mv.flags.includes('k')?'f':'d')+rank;
     animatePiece(reverse?rt:rf, reverse?rf:rt);
   }
 }
+/* Objek langkah verbose pada indeks ply (basis-0) dari permainan yang dimuat. */
 function verboseMoveAt(idx){
   if(!fullHistory||idx<0||idx>=fullHistory.length)return null;
   const t=new Chess(); if(startFen)t.load(startFen);
@@ -640,12 +745,14 @@ function verboseMoveAt(idx){
   return t.history({verbose:true}).slice(-1)[0]||null;
 }
 
-/* ---------- Interaksi bidak: klik dan seret ---------- */
-let drag=null;
+/* ---------- Interaksi bidak: klik-klik DAN seret untuk melangkah ---------- */
+let drag=null; // {from, startX, startY, clone, srcPiece, cell, moved}
 function tryMove(from,to,noAnim){
   const mv=game.moves({square:from,verbose:true}).find(m=>m.to===to);
   if(!mv)return false;
+  // langkah sendiri pertama saat permainan dimuat = meninggalkan jalur permainan; ingat di mana
   if(fullHistory && excursionPly===null) excursionPly=ply;
+  // simpan analisis posisi saat ini sebelum langkah mengubahnya
   const fenBefore=game.fen();
   const snap=(liveAnal&&liveAnal.fen===fenBefore)?liveAnal:null;
   const legalCount=game.moves().length;
@@ -658,7 +765,7 @@ function tryMove(from,to,noAnim){
   selected=null;
   clearJudge();
   const capVal=PVAL[made.captured]||0;
-  if(made.san.includes('#')){
+  if(made.san.includes('#')){ // skakmat terjadi: tidak perlu menunggu mesin
     const sac=isSacrifice(game.fen(),made.color,made.to,capVal);
     setTimeout(()=>showJudge(made.san,made.to,sac?'brilliant':'best'),0);
   } else if(snap&&snap.best&&!game.game_over()){
@@ -681,12 +788,14 @@ function squareFromPoint(x,y){
   return FILES[f]+(8-rk);
 }
 function onSquarePointerDown(e,sq){
-  if(e.button!==undefined && e.button!==0)return;
-  if(loadedMode) loadedMode=false;
+  if(e.button!==undefined && e.button!==0)return; // hanya tombol kiri / sentuh
+  if(loadedMode) loadedMode=false; // mulai berinteraksi => keluar dari mode navigasi di posisi saat ini
+  // klik-langkah ke target legal dari pilihan saat ini
   if(selected && selected!==sq && tryMove(selected,sq))return;
   const piece=game.get(sq);
   if(piece && piece.color===game.turn()){
     selected=sq; render();
+    // siapkan kemungkinan seret bidak ini
     drag={from:sq, startX:e.clientX, startY:e.clientY, clone:null, srcPiece:null, cell:0, moved:false};
     document.addEventListener('pointermove',onDragMove);
     document.addEventListener('pointerup',onDragUp);
@@ -696,7 +805,7 @@ function onSquarePointerDown(e,sq){
 function onDragMove(e){
   if(!drag)return;
   if(!drag.moved){
-    if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)<5)return;
+    if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)<5)return; // klik, belum menyeret
     drag.moved=true;
     const srcSq=boardEl.querySelector(`[data-sq="${drag.from}"]`);
     const pieceEl=srcSq&&srcSq.querySelector('.piece');
@@ -723,9 +832,9 @@ function onDragUp(e){
   if(!d)return;
   if(d.clone)d.clone.remove();
   if(d.srcPiece)d.srcPiece.style.opacity='';
-  if(!d.moved)return;
+  if(!d.moved)return; // klik sederhana: pilihan + titik sudah ditampilkan
   const target=squareFromPoint(e.clientX,e.clientY);
-  if(!(target && target!==d.from && tryMove(d.from,target,true))) render();
+  if(!(target && target!==d.from && tryMove(d.from,target,true))) render(); // kembalikan bidak (drag = tanpa animasi geser)
 }
 
 function afterMove(){
@@ -734,10 +843,10 @@ function afterMove(){
   triggerAnalysis();
 }
 
-/* ---------- Pemicu analisis + bilah evaluasi ---------- */
+/* ---------- Pemicu analisis + bar evaluasi ---------- */
 let lastEval={cp:0};
 function triggerAnalysis(){
-  if(!engineReady)return;
+  if(!engineReady){return;}
   if(!document.getElementById('autoAnalyze').checked){clearArrow();return;}
   const fen=game.fen();
   const depth=+document.getElementById('depthSel').value;
@@ -746,17 +855,19 @@ function triggerAnalysis(){
   const sv=p=>p.mate!==undefined?(p.mate>0?100000:-100000):(p.cp||0);
   const toW=s=>turn==='b'?-s:s;
   analyze(fen,depth,(m,byPv,idx)=>{
-    if(idx===1){
+    if(idx===1){ // bar evaluasi + baris terbaik hanya mengikuti baris mesin teratas
       showEval(m,turn);
       document.getElementById('depthText').textContent='(d'+(m.depth||'')+')';
       if(m.pv) setBest(prettyPV(fen,m.pv.slice(0,1))[0]||m.pv[0], prettyPV(fen,m.pv.slice(0,6)).join(' '));
     }
-    if(byPv){
+    if(byPv){ // simpan snapshot analisis posisi ini (dipakai untuk menilai langkah berikutnya yang dicoba)
       liveAnal={fen, evW:byPv[1]?toW(sv(byPv[1])):0,
         best:(byPv[1]&&byPv[1].pv)?byPv[1].pv[0]:null,
         secondEvW:byPv[2]?toW(sv(byPv[2])):null};
     }
     if(byPv && document.getElementById('showArrow').checked){
+      // alternatif hanya mendapat panah jika dekat dengan langkah terbaik:
+      // selisih <=3 win% -> jelas layak dimainkan (0.5), <=8 -> cukup baik (0.3), lebih buruk -> disembunyikan
       const val=p=>p.mate!==undefined?(p.mate>0?100000:-100000):(p.cp||0);
       const arrows=[];
       if(byPv[1]&&byPv[1].pv){
@@ -776,6 +887,7 @@ function triggerAnalysis(){
     document.getElementById('depthText').textContent='(final d'+(m.depth||'')+')';
     const afterEvW=toW(sv(m));
     if(liveAnal&&liveAnal.fen===fen)liveAnal.evW=afterEvW;
+    // nilai langkah yang baru dicoba pengguna, setelah posisinya selesai dianalisis penuh
     if(pendingJudge && pendingJudge.fenAfter===fen){
       const j=pendingJudge; pendingJudge=null;
       const sign=j.moverWhite?1:-1;
@@ -807,6 +919,7 @@ function showEval(m,turn){
   if(m.mate!==undefined){cp=(m.mate>0?1:-1)*100000;}
   else if(m.cp!==undefined){cp=m.cp;}
   else return;
+  // skor dari sudut pandang pihak yang jalan; konversi ke sudut pandang Putih
   if(turn==='b') cp=-cp;
   lastEval=m.mate!==undefined?{mate:turn==='b'?-m.mate:m.mate}:{cp};
   const fill=document.getElementById('evalfill');
@@ -822,21 +935,23 @@ function showEval(m,turn){
   lastEvalPaint={pct,label};
   paintEvalBar();
 }
+/* Mewarnai bar agar bagian Putih berada di sisi Putih pada papan (terbalik sesuai sudut pandang). */
 let lastEvalPaint={pct:50,label:'0.0'};
 function paintEvalBar(){
   const fill=document.getElementById('evalfill');
   const text=document.getElementById('evaltext');
   const {pct,label}=lastEvalPaint;
   fill.style.height=pct+'%';
-  if(flipped){ fill.style.top='0'; fill.style.bottom='auto'; }
-  else{ fill.style.top='auto'; fill.style.bottom='0'; }
+  if(flipped){ fill.style.top='0'; fill.style.bottom='auto'; }   // sudut pandang Hitam: putih di atas
+  else{ fill.style.top='auto'; fill.style.bottom='0'; }          // sudut pandang Putih: putih di bawah
   text.textContent=label;
-  const atBottom = flipped ? pct>=50 : pct<50;
+  const atBottom = flipped ? pct>=50 : pct<50; // label berada di ujung sisi yang lebih gelap (kalah)
   text.style.top=atBottom?'auto':'4px';
   text.style.bottom=atBottom?'4px':'auto';
 }
 function setBest(a,b){document.getElementById('bestText').textContent=a;document.getElementById('pvText').textContent=b;}
 
+/* mengubah daftar langkah UCI menjadi SAN, memakai game sementara dari fen */
 function prettyPV(fen,uciList){
   const tmp=new Chess(fen);const out=[];
   for(const u of uciList){
@@ -854,6 +969,8 @@ function sqToXY(sq){
   return {x:f+0.5,y:r+0.5};
 }
 let lastArrows=null;
+/* Menggambar panah dari [{uci, o (opacity), w (width)}]. Isi marker solid dan opacity grup elemen
+   garis mencakup badan + kepala bersamaan, sehingga selalu selaras. */
 function drawArrows(list){
   const clean=(list||[]).filter(a=>a&&a.uci&&a.uci.length>=4).slice(0,3);
   if(!clean.length){clearArrow();return;}
@@ -866,12 +983,12 @@ function drawArrows(list){
     lines.push(`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#d4af37" stroke-width="${a.w}"
       opacity="${a.o}" marker-end="url(#ah${k})" stroke-linecap="round"/>`);
   });
-  svg.innerHTML=defs+'</defs>'+lines.reverse().join('');
+  svg.innerHTML=defs+'</defs>'+lines.reverse().join(''); // panah terbaik digambar terakhir = di atas
 }
 function drawArrow(uci){drawArrows([{uci,o:0.85,w:0.18}]);}
 function clearArrow(){svg.innerHTML='';lastArrows=null;}
 
-/* ---------- Daftar langkah / navigasi ---------- */
+/* ---------- Daftar langkah / navigasi untuk permainan yang dimuat ---------- */
 function rebuildMoveList(){
   history=game.history();
   ply=history.length;
@@ -891,6 +1008,7 @@ function bindMoveSpans(el){
   el.querySelectorAll('.mv').forEach(s=>s.addEventListener('click',()=>gotoPly(+s.dataset.ply)));
 }
 function gotoPly(n){
+  // bangun ulang posisi dari riwayat lengkap hingga n
   const full=fullHistory;
   if(!full)return;
   const prevPly=ply;
@@ -900,7 +1018,7 @@ function gotoPly(n){
   ply=n; loadedMode=true; selected=null; excursionPly=null; clearJudge();
   if(n>0) sfxFor(game.history({verbose:true}).slice(-1)[0]);
   render();
-  if(Math.abs(n-prevPly)===1){
+  if(Math.abs(n-prevPly)===1){ // satu langkah: geser bidak
     const idx=Math.max(n,prevPly)-1;
     const mv=(n>prevPly)?game.history({verbose:true})[idx]:verboseMoveAt(idx);
     if(mv)animateMoveObj(mv, n<prevPly);
@@ -923,7 +1041,7 @@ document.getElementById('navNext').onclick=()=>{ if(fullHistory&&excursionPly===
 document.getElementById('returnGame').onclick=()=>{
   if(!fullHistory)return;
   const back=Math.max(0,Math.min(excursionPly??fullHistory.length,fullHistory.length));
-  gotoPly(back);
+  gotoPly(back); // membangun ulang jalur permainan asli; juga membersihkan excursionPly
 };
 document.getElementById('navFlip').onclick=()=>{
   flipped=!flipped;render();paintEvalBar();
@@ -944,7 +1062,7 @@ document.getElementById('newGame').onclick=()=>{
 };
 document.getElementById('undoMove').onclick=()=>{const und=game.undo();selected=null;clearJudge();afterMove();if(und)animateMoveObj(und,true);};
 
-/* ---------- Muat PGN ---------- */
+/* ---------- Pemuatan PGN (bersama) ---------- */
 function loadGameFromPgn(pgn){
   if(!pgn)return false;
   const g=new Chess();
@@ -960,16 +1078,17 @@ function loadGameFromPgn(pgn){
   render();
   document.getElementById('moveList').innerHTML=renderMoveSpans(fullHistory,0);
   bindMoveSpans(document.getElementById('moveList'));
-  gotoPly(fullHistory.length);
+  gotoPly(fullHistory.length); // lompat ke akhir
   return true;
 }
 document.getElementById('loadPgn').onclick=()=>{
   const pgn=document.getElementById('pgnInput').value.trim();
-  if(!loadGameFromPgn(pgn))alert('Tidak dapat menguraikan PGN tersebut.');
+  if(!loadGameFromPgn(pgn))alert('PGN tersebut tidak dapat dibaca.');
 };
 
-/* ---------- Impor (Chess.com + Lichess) ---------- */
+/* ---------- Impor permainan (Chess.com + Lichess) ---------- */
 let ccGames=[];
+/* Mendeteksi situs + nama pengguna dari tautan yang ditempel; nama pengguna biasa jatuh ke pilihan Situs. */
 function detectSite(v){
   v=(v||'').trim();
   let m=v.match(/lichess\.org\/@\/([^/?#\s]+)/i);
@@ -983,6 +1102,7 @@ async function ccApi(url){
   if(!r.ok)throw new Error('HTTP '+r.status);
   return r.json();
 }
+/* Setiap fetcher menandai permainan dengan _source, _me (nama pengguna Anda), _ts (ms) untuk digabungkan. */
 async function fetchChessCom(user){
   let archiveUrl=document.getElementById('ccMonth').value;
   if(!archiveUrl){
@@ -994,6 +1114,7 @@ async function fetchChessCom(user){
   return (data.games||[]).filter(g=>g.pgn)
     .map(g=>Object.assign(g,{_source:'chesscom',_me:user,_ts:(g.end_time||0)*1000}));
 }
+/* Lichess: aliran ND-JSON dari permainan terakhir pengguna, dipetakan ke bentuk chess.com. */
 async function fetchLichess(user){
   const r=await fetch(`https://lichess.org/api/games/user/${user}?max=30&pgnInJson=true&opening=true`,
     {headers:{'Accept':'application/x-ndjson'}});
@@ -1023,7 +1144,7 @@ async function populateMonths(){
       const mm=u.match(/(\d{4})\/(\d{2})$/);
       if(mm){const o=document.createElement('option');o.value=u;o.textContent=`${mm[1]}-${mm[2]}`;sel.appendChild(o);}
     });
-  }catch(e){}
+  }catch(e){/* diam; tombol ambil akan melaporkan */}
 }
 document.getElementById('ccFetch').onclick=async()=>{
   const ccRaw=document.getElementById('ccUserCc').value.trim();
@@ -1031,6 +1152,7 @@ document.getElementById('ccFetch').onclick=async()=>{
   try{ localStorage.setItem('cc_user_cc',ccRaw); localStorage.setItem('cc_user_li',liRaw); }catch(e){}
   const st=document.getElementById('ccStatus'), list=document.getElementById('ccList');
   list.innerHTML='';
+  // bangun tugas pengambilan; tautan yang ditempel menentukan kotak mana yang dipakai
   const tasks=[];
   if(ccRaw){ const d=detectSite(ccRaw); tasks.push({user:d.user, site:d.site||'chesscom'}); }
   if(liRaw){ const d=detectSite(liRaw); tasks.push({user:d.user, site:d.site||'lichess'}); }
@@ -1041,7 +1163,7 @@ document.getElementById('ccFetch').onclick=async()=>{
       return {ok:true, site:t.site, user:t.user, games}; }
     catch(e){ return {ok:false, site:t.site, user:t.user, err:e.message, games:[]}; }
   }));
-  ccGames = results.flatMap(r=>r.games).sort((a,b)=>b._ts-a._ts);
+  ccGames = results.flatMap(r=>r.games).sort((a,b)=>b._ts-a._ts); // digabung, terbaru lebih dulu
   const nm=s=>s==='lichess'?'Lichess':'Chess.com';
   const parts=results.map(r=> r.ok?`${r.games.length} dari ${nm(r.site)}`:`${nm(r.site)} gagal (${r.err})`);
   if(!ccGames.length){ st.textContent='Tidak ada permainan ditemukan. '+parts.join(' · '); return; }
@@ -1068,7 +1190,7 @@ function renderCcList(st,list){
         <span class="num">${yourScore} · ${g.time_class||''}</span></div>`;
     }).join('');
     list.querySelectorAll('.ccgame').forEach(el=>{
-      el.onmouseenter=()=>el.style.background='var(--panel2)';
+      el.onmouseenter=()=>el.style.background='var(--panel3)';
       el.onmouseleave=()=>el.style.background='';
       el.onclick=()=>{
         const g=ccGames[+el.dataset.i];
@@ -1095,7 +1217,560 @@ document.getElementById('copyFen').onclick=()=>{navigator.clipboard.writeText(ga
 function updateFenOut(){const o=document.getElementById('fenOut');if(o)o.textContent=game.fen();}
 
 /* ---------- Deteksi pembukaan ---------- */
+/* Buku pembukaan ringkas: [urutan SAN, nama]. Kecocokan prefiks terpanjang menang. */
 const OPENINGS=[
   ["e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7","Ruy Lopez: Closed"],
   ["e4 e5 Nf3 Nc6 Bb5 a6 Ba4","Ruy Lopez: Morphy Defense"],
-  ["e
+  ["e4 e5 Nf3 Nc6 Bb5 a6 Bxc6","Ruy Lopez: Exchange Variation"],
+  ["e4 e5 Nf3 Nc6 Bb5 Nf6","Ruy Lopez: Berlin Defense"],
+  ["e4 e5 Nf3 Nc6 Bb5","Ruy Lopez"],
+  ["e4 e5 Nf3 Nc6 Bc4 Bc5 b4","Italian: Evans Gambit"],
+  ["e4 e5 Nf3 Nc6 Bc4 Bc5","Italian: Giuoco Piano"],
+  ["e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5","Italian: Fried Liver Attack"],
+  ["e4 e5 Nf3 Nc6 Bc4 Nf6","Italian: Two Knights Defense"],
+  ["e4 e5 Nf3 Nc6 Bc4","Italian Game"],
+  ["e4 e5 Nf3 Nc6 d4 exd4 Nxd4","Scotch Game"],
+  ["e4 e5 Nf3 Nc6 d4","Scotch Game"],
+  ["e4 e5 Nf3 Nc6 Nc3 Nf6","Four Knights Game"],
+  ["e4 e5 Nf3 Nf6","Petrov Defense"],
+  ["e4 e5 Nf3 d6","Philidor Defense"],
+  ["e4 e5 Bc4","Bishop's Opening"],
+  ["e4 e5 Nc3","Vienna Game"],
+  ["e4 e5 f4","King's Gambit"],
+  ["e4 e5 d4 exd4 Qxd4","Center Game"],
+  ["e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6","Sicilian: Najdorf"],
+  ["e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6","Sicilian: Dragon"],
+  ["e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 g6","Sicilian: Accelerated Dragon"],
+  ["e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 e5","Sicilian: Sveshnikov"],
+  ["e4 c5 Nf3 e6 d4 cxd4 Nxd4 a6","Sicilian: Kan"],
+  ["e4 c5 Nf3 e6 d4 cxd4 Nxd4 Nc6","Sicilian: Taimanov"],
+  ["e4 c5 Nf3 d6","Sicilian Defense"],
+  ["e4 c5 Nf3 Nc6","Sicilian Defense"],
+  ["e4 c5 Nf3 e6","Sicilian Defense"],
+  ["e4 c5 c3","Sicilian: Alapin"],
+  ["e4 c5 Nc3","Sicilian: Closed"],
+  ["e4 c5 d4 cxd4 c3","Sicilian: Smith-Morra Gambit"],
+  ["e4 c5","Sicilian Defense"],
+  ["e4 e6 d4 d5 Nc3 Bb4","French: Winawer"],
+  ["e4 e6 d4 d5 Nc3 Nf6","French: Classical"],
+  ["e4 e6 d4 d5 e5","French: Advance"],
+  ["e4 e6 d4 d5 exd5","French: Exchange"],
+  ["e4 e6 d4 d5 Nd2","French: Tarrasch"],
+  ["e4 e6","French Defense"],
+  ["e4 c6 d4 d5 e5","Caro-Kann: Advance"],
+  ["e4 c6 d4 d5 exd5","Caro-Kann: Exchange"],
+  ["e4 c6 d4 d5 Nc3 dxe4 Nxe4","Caro-Kann: Classical"],
+  ["e4 c6","Caro-Kann Defense"],
+  ["e4 d5 exd5 Qxd5","Scandinavian Defense"],
+  ["e4 d5","Scandinavian Defense"],
+  ["e4 Nf6","Alekhine Defense"],
+  ["e4 d6 d4 Nf6","Pirc Defense"],
+  ["e4 d6","Pirc Defense"],
+  ["e4 g6","Modern Defense"],
+  ["d4 d5 c4 e6 Nc3 Nf6","Queen's Gambit Declined"],
+  ["d4 d5 c4 e6","Queen's Gambit Declined"],
+  ["d4 d5 c4 dxc4","Queen's Gambit Accepted"],
+  ["d4 d5 c4 c6","Slav Defense"],
+  ["d4 d5 c4","Queen's Gambit"],
+  ["d4 Nf6 c4 e6 Nc3 Bb4","Nimzo-Indian Defense"],
+  ["d4 Nf6 c4 e6 Nf3 b6","Queen's Indian Defense"],
+  ["d4 Nf6 c4 e6 g3","Catalan Opening"],
+  ["d4 Nf6 c4 g6 Nc3 d5","Grünfeld Defense"],
+  ["d4 Nf6 c4 g6","King's Indian Defense"],
+  ["d4 Nf6 c4 c5 d5 b5","Benko Gambit"],
+  ["d4 Nf6 c4 c5 d5 e6","Benoni Defense"],
+  ["d4 f5","Dutch Defense"],
+  ["d4 Nf6 Bg5","Trompowsky Attack"],
+  ["d4 d5 Bf4","London System"],
+  ["d4 Nf6 Nf3 d5 Bf4","London System"],
+  ["d4 Nf6 Nf3 g6 Bf4","London System"],
+  ["d4 Nf6 Nf3 e6 Bf4","London System"],
+  ["d4 d5 Nf3 Nf6 e3 e6 Bd3","Colle System"],
+  ["d4 d5 e4","Blackmar-Diemer Gambit"],
+  ["d4 d5","Queen's Pawn Game"],
+  ["d4 Nf6","Indian Game"],
+  ["c4 e5","English: Reversed Sicilian"],
+  ["c4 c5","English: Symmetrical"],
+  ["c4","English Opening"],
+  ["Nf3 d5 g3","King's Indian Attack"],
+  ["Nf3 d5 c4","Réti Opening"],
+  ["Nf3","Réti Opening"],
+  ["b3","Nimzo-Larsen Attack"],
+  ["f4","Bird's Opening"],
+  ["g3","King's Fianchetto Opening"],
+  ["b4","Polish Opening"],
+  ["e4","King's Pawn Opening"],
+  ["d4","Queen's Pawn Opening"],
+];
+function detectOpening(sans){
+  let best=null;
+  for(const [line,name] of OPENINGS){
+    const toks=line.split(' ');
+    if(toks.length>sans.length) continue;
+    if(toks.every((t,i)=>t===sans[i])){
+      if(!best||toks.length>best.plies) best={name, plies:toks.length};
+    }
+  }
+  return best; // {name, plies} atau null
+}
+function extractGameMeta(pgn, sans){
+  const meta={opening:null, eco:null, bookPlies:0, white:null, black:null, result:null};
+  const wH=pgn.match(/\[White "([^"]+)"\]/); if(wH&&wH[1]!=='?')meta.white=wH[1];
+  const bH=pgn.match(/\[Black "([^"]+)"\]/); if(bH&&bH[1]!=='?')meta.black=bH[1];
+  const rH=pgn.match(/\[Result "([^"]+)"\]/); if(rH&&rH[1]!=='*')meta.result=rH[1];
+  const eco=pgn.match(/\[ECO "([^"]+)"\]/); if(eco)meta.eco=eco[1];
+  const op=pgn.match(/\[Opening "([^"]+)"\]/); if(op&&op[1]!=='?')meta.opening=op[1];
+  if(!meta.opening){
+    const u=pgn.match(/\[ECOUrl "https?:\/\/www\.chess\.com\/openings\/([^"]+)"\]/);
+    if(u){ // "Ruy-Lopez-Opening-Morphy-Defense...3.Bb5-a6" → potong pada token nomor-langkah pertama
+      const toks=decodeURIComponent(u[1]).split('-');
+      const words=[]; for(const t of toks){ if(/^\d/.test(t))break; words.push(t); }
+      if(words.length)meta.opening=words.join(' ');
+    }
+  }
+  const hit=detectOpening(sans);
+  if(hit){ meta.bookPlies=hit.plies; if(!meta.opening)meta.opening=hit.name; }
+  return meta;
+}
+
+/* ---------- Metadata klasifikasi kualitas langkah ---------- */
+const CATS={
+  brilliant:{label:'Brilian',icon:'!!',color:'#1aa6a6',group:'good'},
+  great:{label:'Hebat',icon:'!',color:'#3b8fd4',group:'good'},
+  best:{label:'Terbaik',icon:'★',color:'#5fb35f',group:'good'},
+  excellent:{label:'Bagus',icon:'✓',color:'#8ab84a',group:'good'},
+  good:{label:'Oke',icon:'○',color:'#a9b34a',group:'good'},
+  book:{label:'Teori',icon:'▦',color:'#b07a3c',group:'good'},
+  inaccuracy:{label:'Kurang Akurat',icon:'?!',color:'#e0c04a',group:'bad'},
+  mistake:{label:'Buruk',icon:'?',color:'#e08a3c',group:'bad'},
+  miss:{label:'Terlewat',icon:'✗',color:'#e0654a',group:'bad'},
+  blunder:{label:'Blunder',icon:'??',color:'#d24a4a',group:'bad'},
+};
+const GOOD_ORDER=['brilliant','great','best','excellent','good','book'];
+const BAD_ORDER=['inaccuracy','mistake','miss','blunder'];
+const PVAL={p:1,n:3,b:3,r:5,q:9,k:0};
+/* win% dari centipawn — model Lichess */
+const winPct=cp=>50+50*(2/(1+Math.exp(-0.00368208*Math.max(-10000,Math.min(10000,cp))))-1);
+const accColorOf=v=>v>=90?'#5fb35f':v>=80?'#8ab84a':v>=70?'#e0c04a':v>=55?'#e08a3c':'#d24a4a';
+const estEloOf=v=>(v==null)?null:Math.max(100,Math.min(3000,Math.round(500+Math.pow(Math.max(0,v-50),1.5)*6)));
+function catCounts(){
+  const counts={w:{},b:{}};
+  GOOD_ORDER.concat(BAD_ORDER).forEach(ct=>{counts.w[ct]=0;counts.b[ct]=0;});
+  if(reviewData)for(const d of reviewData){ if(d)counts[d.moverWhite?'w':'b'][d.cat]++; }
+  return counts;
+}
+
+/* ---------- Kartu laporan sebagai gambar untuk dibagikan ---------- */
+function buildReportCard(){
+  const W=720,H=920,c=document.createElement('canvas');c.width=W;c.height=H;
+  const x=c.getContext('2d');
+  // latar belakang + glow merek
+  const bg=x.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#2c2825');bg.addColorStop(1,'#1a1815');
+  x.fillStyle=bg;x.fillRect(0,0,W,H);
+  const glow=x.createRadialGradient(W*0.75,60,10,W*0.75,60,420);
+  glow.addColorStop(0,'rgba(212,175,55,0.22)');glow.addColorStop(1,'rgba(212,175,55,0)');
+  x.fillStyle=glow;x.fillRect(0,0,W,H);
+  // judul
+  const tg=x.createLinearGradient(W*0.2,0,W*0.8,0);tg.addColorStop(0,'#d4af37');tg.addColorStop(1,'#f0d060');
+  x.textAlign='center';
+  x.font='800 38px Georgia,serif';x.fillStyle=tg;
+  x.fillText('♟ ULASAN CATUR',W/2,66);
+  x.font='600 14px Georgia,serif';x.fillStyle='#b8b2a8';
+  x.fillText('LAPORAN PERMAINAN',W/2,94);
+  // pemain + pembukaan
+  const wName=(gameMeta&&gameMeta.white)||'Putih', bName=(gameMeta&&gameMeta.black)||'Hitam';
+  x.font='700 24px Georgia,serif';x.fillStyle='#ffffff';
+  x.fillText(`${wName}  vs  ${bName}`,W/2,148);
+  let y=176;
+  if(gameMeta&&gameMeta.result){x.font='600 16px Georgia,serif';x.fillStyle='#b8b2a8';x.fillText(gameMeta.result,W/2,y);y+=28;}
+  if(gameMeta&&gameMeta.opening){x.font='600 15px Georgia,serif';x.fillStyle='#d4af37';x.fillText('📖 '+gameMeta.opening,W/2,y);}
+  // blok akurasi
+  const drawAcc=(cx,label,v)=>{
+    x.font='600 15px Georgia,serif';x.fillStyle='#b8b2a8';x.fillText(label,cx,258);
+    x.font='800 44px Georgia,serif';x.fillStyle=(v==null)?'#b8b2a8':accColorOf(v);
+    x.fillText(v==null?'—':v.toFixed(1)+'%',cx,306);
+    const e=estEloOf(v);
+    x.font='600 14px Georgia,serif';x.fillStyle='#b8b2a8';
+    x.fillText(e==null?'':'≈ '+e+' Elo',cx,330);
+  };
+  drawAcc(W*0.3,'PUTIH',reviewAccuracy&&reviewAccuracy.w);
+  drawAcc(W*0.7,'HITAM',reviewAccuracy&&reviewAccuracy.b);
+  // tabel kategori
+  const counts=catCounts();
+  const cats=GOOD_ORDER.concat(BAD_ORDER);
+  let ty=384;
+  x.font='700 13px Georgia,serif';x.fillStyle='#b8b2a8';
+  x.textAlign='right';x.fillText('P',W-190,ty);x.fillText('H',W-120,ty);
+  ty+=24;
+  for(const ct of cats){
+    const m=CATS[ct];
+    // lingkaran ikon
+    x.beginPath();x.arc(190,ty-5,10,0,7);x.fillStyle=m.color;x.fill();
+    x.font='800 9px Georgia,serif';x.fillStyle='#fff';x.textAlign='center';x.fillText(m.icon,190,ty-2);
+    x.font='600 15px Georgia,serif';x.fillStyle='#e8e4dc';x.textAlign='left';x.fillText(m.label,212,ty);
+    x.font='700 15px Georgia,serif';x.fillStyle=m.color;x.textAlign='right';
+    x.fillText(String(counts.w[ct]),W-190,ty);x.fillText(String(counts.b[ct]),W-120,ty);
+    ty+=26;
+  }
+  // grafik evaluasi
+  const gx=60,gy=650,gw=W-120,gh=160;
+  x.fillStyle='#100f0e';x.fillRect(gx,gy,gw,gh);
+  if(reviewEvals&&reviewEvals.length>1){
+    const n=reviewEvals.length;
+    const px=i=>gx+i/(n-1)*gw, py=cp=>gy+gh-(winPct(cp)/100)*gh;
+    x.beginPath();x.moveTo(gx,gy+gh);
+    for(let i=0;i<n;i++)x.lineTo(px(i),py(reviewEvals[i]));
+    x.lineTo(gx+gw,gy+gh);x.closePath();
+    x.fillStyle='rgba(221,208,178,0.92)';x.fill();
+    x.strokeStyle='rgba(255,255,255,0.18)';x.setLineDash([4,4]);
+    x.beginPath();x.moveTo(gx,gy+gh/2);x.lineTo(gx+gw,gy+gh/2);x.stroke();x.setLineDash([]);
+    const DOT={brilliant:1,great:1,inaccuracy:1,mistake:1,miss:1,blunder:1};
+    for(let i=0;i<reviewData.length;i++){
+      const d=reviewData[i];
+      if(d&&DOT[d.cat]){
+        x.beginPath();x.arc(px(i+1),py(reviewEvals[i+1]),4.5,0,7);
+        x.fillStyle=CATS[d.cat].color;x.fill();
+        x.strokeStyle='#262626';x.lineWidth=1.5;x.stroke();
+      }
+    }
+  }
+  // footer
+  x.textAlign='center';x.font='600 14px Georgia,serif';x.fillStyle='#b8b2a8';
+  x.fillText('Ulasan permainan catur gratis — Ulasan Catur',W/2,H-36);
+  return c;
+}
+async function shareReport(){
+  if(!reviewData){alert('Jalankan pemindaian terlebih dahulu.');return;}
+  const canvas=buildReportCard();
+  canvas.toBlob(async blob=>{
+    if(!blob)return;
+    let copied=false;
+    try{
+      if(navigator.clipboard&&window.ClipboardItem){
+        await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);copied=true;
+      }
+    }catch(e){}
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='laporan-ulasan-catur.png';a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    setStatus(copied?'Kartu laporan disalin & diunduh':'Kartu laporan diunduh');
+  },'image/png');
+}
+
+/* Pemeriksaan pengorbanan: apakah bidak yang baru dipindahkan mover ke `toSq` diberikan untuk
+   kerugian material bersih (>=2)? Hanya menghitung bidak sungguhan (minor+), dan hanya bidak
+   yang dipindah — sehingga material lain yang menggantung tidak salah memicu "brilliant". */
+/* capturedVal = nilai yang ditangkap langkah ini sendiri (agar sebuah tukar/rekapture tidak dianggap sebagai pengorbanan). */
+function isSacrifice(fenAfter, mover, toSq, capturedVal){
+  let g;
+  try{ g=new Chess(fenAfter); }catch(e){ return false; }
+  if(g.turn()===mover) return false;            // lawan harus jalan
+  const piece=g.get(toSq); if(!piece) return false;
+  const V=PVAL[piece.type]||0; if(V<3) return false; // hanya korbankan bidak sungguhan (minor+)
+  const caps=g.moves({verbose:true}).filter(m=>m.to===toSq && m.captured);
+  if(!caps.length) return false;                // bidak yang dipindah bahkan tidak diserang
+  const gained=capturedVal||0;                  // material yang sudah dimenangkan langkah ini
+  let bestNet=99;                               // lawan memilih garis terburuk untuk mover
+  for(const c of caps){
+    const g2=new Chess(fenAfter); g2.move({from:c.from,to:c.to,promotion:'q'});
+    let W=0; // bisakah mover merekapture di kotak itu?
+    g2.moves({verbose:true}).filter(m=>m.to===toSq && m.captured)
+      .forEach(r=>{ W=Math.max(W, PVAL[r.captured]||0); });
+    const net = gained - V + W;                  // material bersih: menang − bidak hilang + rekapture
+    if(net<bestNet) bestNet=net;
+  }
+  return bestNet <= -2;                          // berakhir minimal minor piece lebih sedikit = pengorbanan nyata
+}
+/* Klasifikasi berdasarkan kehilangan win-probability (wl, 0-100) — otomatis melonggarkan di posisi
+   yang sudah menentukan di mana perubahan cp besar tidak mengubah hasil. */
+function classify(d){
+  const wl=Math.max(0,d.wl);
+  // brilliant = pengorbanan (hampir) terbaik yang membawa ke skakmat paksa, atau memenangkan
+  // keunggulan material/posisional yang jelas (dan Anda belum sedang menghancurkan). Korban ratu untuk mat = kasus model.
+  const sacMates   = d.evalAfterMover>=90000;                       // pengorbanan memaksa skakmat
+  const sacWins    = d.evalAfterMover>=150 && d.evalBeforeMover<=300; // pengorbanan menghasilkan keunggulan nyata
+  if(d.sac && (d.isBest||wl<=2) && !d.isBook && (sacMates||sacWins)) return 'brilliant';
+  // great = satu-satunya langkah yang menyelamatkan/mempertahankan permainan (terbaik-kedua runtuh), atau
+  // langkah sulit ditemukan yang memberi keunggulan material menang. Rekapture rutin tidak pernah memenuhi syarat.
+  const onlyMove   = d.gapWl>=14 && d.evalAfterMover>=-50;          // unik: semua yang lain kalah
+  const winsMat    = d.gapWl>=10 && d.evalAfterMover>=200;          // tidak jelas dan pasti menang setelahnya
+  if(d.isBest && !d.sac && !d.trivialRecap && d.legalCount>1 && wl<=1.5 && (onlyMove||winsMat)) return 'great';
+  if(d.isBook && wl<=6) return 'book';
+  if(d.isBest || wl<=0.5) return 'best';  // langkah #1 mesin, atau yang kehilangan ~0 win% (seri/noise)
+  if(wl<=2.5) return 'excellent';         // jelas mendekati terbaik
+  if(wl<=6)   return 'good';
+  if(wl<=11)  return 'inaccuracy';
+  // Miss: Anda punya posisi menang (>=80% win) dan membiarkan bagian besar lepas, tapi masih
+  // tidak kalah (>=45%). Melewatkan kesempatan mematikan, bukan membuang permainan.
+  const winBefore=winPct(d.evalBeforeMover), winAfter=winPct(d.evalAfterMover);
+  if(winBefore>=80 && winAfter>=45) return 'miss';
+  if(wl<=20)  return 'mistake';
+  return 'blunder';
+}
+
+/* ---------- Ulasan Permainan ---------- */
+document.getElementById('runReview').onclick=async()=>{
+  if(!fullHistory||!fullHistory.length){alert('Muat permainan pada tab Impor atau PGN terlebih dahulu.');return;}
+  const depth=+document.getElementById('reviewDepth').value;
+  const prog=document.getElementById('progress');const bar=document.getElementById('progressbar');
+  prog.style.display='block';
+  reviewData=new Array(fullHistory.length).fill(null);
+
+  // bangun fens + langkah verbose
+  const base=new Chess(); if(startFen)base.load(startFen);
+  const fens=[base.fen()]; const verbose=[];
+  for(const san of fullHistory){const mv=base.move(san); verbose.push(mv); fens.push(base.fen());}
+
+  // 1) evaluasi cache dalam dari cloud lichess untuk posisi pembukaan/buku (depth 40-70)
+  bar.style.width='2%';
+  let cloud=new Array(fens.length);
+  try{ cloud=await cloudPrefetch(fens, 24, 4000); }catch(e){}
+  reviewBookHits=cloud.map(c=>!!c);
+  // 2) kumpulan mesin menutupi semua yang tidak dicakup cloud
+  const res=await analyzePool(fens, depth, 2, (n,t)=>{ bar.style.width=Math.round(n/t*100)+'%'; }, cloud);
+  const evals=res.map(r=>r?r.ev:0);            // cp sudut pandang Putih
+  const bestUci=res.map(r=>r?r.bm:null);
+  const second=res.map(r=>r?r.second:null);    // cp sudut pandang Putih dari terbaik-kedua, atau null
+  reviewEvals=evals;
+
+  const moveAcc=(wb,wa)=>{ const a=103.1668*Math.exp(-0.04354*Math.max(0,wb-wa))-3.1669; return Math.max(0,Math.min(100,a)); };
+  const accsW=[], accsB=[];
+
+  for(let i=0;i<fullHistory.length;i++){
+    const moverWhite=(fens[i].split(' ')[1]==='w');
+    const sign=moverWhite?1:-1;
+    const before=evals[i], after=evals[i+1];
+    const cl = sign*(before-after);                 // centipawn loss (sudut pandang mover)
+    const evalAfterMover = sign*after;
+    const wb=winPct(sign*before), wa=winPct(sign*after);
+    const wl=wb-wa;                                 // win% yang hilang akibat langkah ini
+    const playedUci=(verbose[i].from+verbose[i].to+(verbose[i].promotion||'')).toLowerCase();
+    const isBest = bestUci[i] && playedUci.slice(0,4)===bestUci[i].slice(0,4);
+    let gapWl=0;                                    // selisih win% antara terbaik dan terbaik-kedua
+    if(second[i]!==null) gapWl=winPct(sign*before)-winPct(sign*second[i]);
+    let legalCount=2;
+    try{ legalCount=new Chess(fens[i]).moves().length; }catch(e){}
+    const sac = isSacrifice(fens[i+1], moverWhite?'w':'b', verbose[i].to, PVAL[verbose[i].captured]||0);
+    // rekapture rutin pada kotak yang baru ditangkap lawan — tidak pernah "Hebat"
+    const prev=i>0?verbose[i-1]:null;
+    const trivialRecap=!!(verbose[i].captured && prev && prev.captured && prev.to===verbose[i].to);
+    // "book" = di dalam jalur pembukaan yang cocok, atau posisi awal permainan standar yang ditemukan di
+    // cache cloud lichess (permainan FEN kustom tidak pernah mendapat label buku — cache cloud menyimpan posisi apa pun)
+    const isBook = (gameMeta && i<gameMeta.bookPlies) || (!startFen && i<20 && reviewBookHits && reviewBookHits[i+1]);
+    const cat = classify({wl, gapWl, isBest, sac, trivialRecap, evalAfterMover, evalBeforeMover:sign*before, legalCount, isBook});
+    reviewData[i]={cat, cl:Math.round(cl), moverWhite, to:verbose[i].to};
+    (moverWhite?accsW:accsB).push(moveAcc(wb,wa));
+  }
+  // akurasi permainan = campuran rata-rata dan rata-rata harmonik (gaya lichess) — blunder berbobot berat
+  const gameAcc=list=>{
+    if(!list.length)return null;
+    const m=list.reduce((a,b)=>a+b,0)/list.length;
+    const h=list.length/list.reduce((a,b)=>a+1/Math.max(b,5),0);
+    return (m+h)/2;
+  };
+  reviewAccuracy={ w: gameAcc(accsW), b: gameAcc(accsB) };
+
+  prog.style.display='none';bar.style.width='0';
+  renderReview();
+  gotoPly(0); // pemindaian selesai — mulai ulasan dari langkah 0
+};
+
+function renderReview(){
+  const el=document.getElementById('reviewList');
+  if(!reviewData){el.innerHTML='';return;}
+  const counts={w:{},b:{}};
+  GOOD_ORDER.concat(BAD_ORDER).forEach(c=>{counts.w[c]=0;counts.b[c]=0;});
+  for(let i=0;i<fullHistory.length;i++){
+    const d=reviewData[i]; if(!d)continue;
+    counts[d.moverWhite?'w':'b'][d.cat]++;
+  }
+  const rows=(order)=>order.map(c=>{
+    const m=CATS[c];
+    return `<div class="rs-row">
+      <span class="ic"><span class="rs-badge" style="background:${m.color}">${m.icon}</span>${m.label}</span>
+      <span style="text-align:center;color:${m.color}">${counts.w[c]}</span>
+      <span style="text-align:center;color:${m.color}">${counts.b[c]}</span></div>`;
+  }).join('');
+  // header akurasi + perkiraan Elo
+  const accColor=accColorOf, estElo=estEloOf;
+  const accCell=(label,v)=>{
+    const txt=(v==null)?'—':v.toFixed(1)+'%';
+    const col=(v==null)?'var(--muted)':accColor(v);
+    const elo=estElo(v);
+    return `<div class="acc-cell"><div class="acc-label">${label}</div>
+      <div class="acc-val" style="color:${col}">${txt}</div>
+      <div class="acc-elo">${elo==null?'':'≈ '+elo+' Elo'}</div></div>`;
+  };
+  const accuracy=reviewAccuracy?`<div class="acc-box">
+    <div class="acc-title">Akurasi &amp; perkiraan rating</div>
+    <div class="acc-grid">${accCell('Putih',reviewAccuracy.w)}${accCell('Hitam',reviewAccuracy.b)}</div>
+  </div>`:'';
+
+  // nama pembukaan
+  const openingHtml=(gameMeta&&gameMeta.opening)?
+    `<div class="opening-line">📖 ${esc(gameMeta.opening)}${gameMeta.eco?` <span class="num">(${esc(gameMeta.eco)})</span>`:''}</div>`:'';
+
+  // grafik evaluasi (garis win%, area Putih, titik berwarna pada langkah penting)
+  let graphHtml='';
+  if(reviewEvals&&reviewEvals.length>1){
+    const n=reviewEvals.length, W=440, H=100;
+    const X=i=>(i/(n-1))*W, Y=cp=>H-(winPct(cp)/100)*H;
+    let path=`M0,${H}`;
+    for(let i=0;i<n;i++)path+=` L${X(i).toFixed(1)},${Y(reviewEvals[i]).toFixed(1)}`;
+    path+=` L${W},${H} Z`;
+    let line='';
+    for(let i=0;i<n;i++)line+=(i?' L':'M')+X(i).toFixed(1)+','+Y(reviewEvals[i]).toFixed(1);
+    let dots='';
+    const DOT={brilliant:1,great:1,inaccuracy:1,mistake:1,miss:1,blunder:1};
+    for(let i=0;i<fullHistory.length;i++){
+      const d=reviewData[i];
+      if(d&&DOT[d.cat])dots+=`<circle cx="${X(i+1).toFixed(1)}" cy="${Y(reviewEvals[i+1]).toFixed(1)}" r="3.4" fill="${CATS[d.cat].color}" stroke="#262626" stroke-width="1.2"><title>${i%2?'':(i/2+1)+'. '}${fullHistory[i]} — ${CATS[d.cat].label}</title></circle>`;
+    }
+    graphHtml=`<div class="graph-box"><svg id="evalGraph" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <rect x="0" y="0" width="${W}" height="${H}" fill="#100f0e"/>
+      <line x1="0" y1="${H/2}" x2="${W}" y2="${H/2}" stroke="#4a4540" stroke-width="0.8" stroke-dasharray="4 4"/>
+      <path d="${path}" fill="#ddd0b2" fill-opacity="0.9"/>
+      <path d="${line}" fill="none" stroke="#a89a80" stroke-width="1"/>
+      <line id="graphMarker" x1="${X(ply).toFixed(1)}" y1="0" x2="${X(ply).toFixed(1)}" y2="${H}" stroke="var(--accent)" stroke-width="1.6"/>
+      ${dots}
+    </svg></div>`;
+  }
+
+  // langkah terbaik & terburuk per pihak
+  const RANK={brilliant:6,great:5,best:4,excellent:3,good:2,book:2,inaccuracy:1,miss:1,mistake:1,blunder:0};
+  function pickBest(white){
+    let bi=-1,br=-1,bcl=1e9;
+    for(let i=0;i<fullHistory.length;i++){const d=reviewData[i];if(!d||d.moverWhite!==white)continue;
+      const r=RANK[d.cat]; if(r>=4&&(r>br||(r===br&&d.cl<bcl))){br=r;bi=i;bcl=d.cl;}}
+    return bi;
+  }
+  function pickWorst(white){
+    let bi=-1,bcl=0;
+    for(let i=0;i<fullHistory.length;i++){const d=reviewData[i];if(!d||d.moverWhite!==white)continue;
+      if(RANK[d.cat]<=1 && d.cl>bcl){bcl=d.cl;bi=i;}} // hanya langkah yang benar-benar buruk memenuhi syarat
+    return bi;
+  }
+  const chip=(i,label)=>{
+    if(i<0)return '';
+    const d=reviewData[i],m=CATS[d.cat];
+    const mvNum=Math.floor(i/2)+1+(i%2?'… ':'. ');
+    return `<span class="hl-chip" data-ply="${i+1}"><span class="num">${label}</span> ${mvNum}${fullHistory[i]}
+      <span class="rs-badge" style="background:${m.color}">${m.icon}</span></span>`;
+  };
+  let hlHtml='';
+  const chips=[chip(pickBest(true),'Terbaik Putih'),chip(pickWorst(true),'Terburuk Putih'),
+               chip(pickBest(false),'Terbaik Hitam'),chip(pickWorst(false),'Terburuk Hitam')].filter(Boolean);
+  if(chips.length)hlHtml=`<div class="hl-box">${chips.join('')}</div>`;
+
+  // momen kunci: perubahan win% terbesar
+  let momentsHtml='';
+  if(reviewEvals&&reviewEvals.length>1){
+    const state=cp=>{const w=winPct(cp);return w>=78?'Putih menang':w>=62?'Putih lebih baik':w>38?'Kira-kira seimbang':w>22?'Hitam lebih baik':'Hitam menang';};
+    const sw=[];
+    for(let i=0;i<fullHistory.length;i++){
+      const d=Math.abs(winPct(reviewEvals[i+1])-winPct(reviewEvals[i]));
+      if(d>=18)sw.push({i,d});
+    }
+    sw.sort((a,b)=>b.d-a.d);
+    const top=sw.slice(0,6).sort((a,b)=>a.i-b.i);
+    if(top.length){
+      momentsHtml='<div class="km-box"><div class="km-title">Momen kunci</div>'+top.map(({i})=>{
+        const d=reviewData[i],m=d?CATS[d.cat]:null;
+        const mvNum=Math.floor(i/2)+1+(i%2?'… ':'. ');
+        return `<div class="km-row" data-ply="${i+1}">
+          <span class="km-mv">${mvNum}${fullHistory[i]}${m?` <span class="rs-badge" style="background:${m.color}">${m.icon}</span>`:''}</span>
+          <span class="km-desc">${state(reviewEvals[i])} → ${state(reviewEvals[i+1])}</span></div>`;
+      }).join('')+'</div>';
+    }
+  }
+  const table=`<div class="review-summary">
+    <div class="rs-col">
+      <div class="rs-head"><span style="color:var(--good)">● Bagus</span>
+        <span class="wb"><span>P</span><span>H</span></span></div>
+      ${rows(GOOD_ORDER)}
+    </div>
+    <div class="rs-col">
+      <div class="rs-head"><span style="color:var(--bad)">● Buruk</span>
+        <span class="wb"><span>P</span><span>H</span></span></div>
+      ${rows(BAD_ORDER)}
+    </div>
+  </div>`;
+
+  let moves='';
+  for(let i=0;i<fullHistory.length;i++){
+    const d=reviewData[i]; const m=d?CATS[d.cat]:null;
+    if(i%2===0)moves+=`<span class="num">${i/2+1}.</span>`;
+    const badge=m?` <span class="rs-badge" style="background:${m.color}" title="${m.label}">${m.icon}</span>`:'';
+    moves+=`<span class="mv" data-ply="${i+1}">${fullHistory[i]}${badge}</span>`;
+  }
+  const shareBtn=reviewAccuracy?`<button class="btn" id="shareBtn" style="width:100%;margin:0 0 10px">📤 Bagikan kartu laporan</button>`:'';
+  el.innerHTML=accuracy+shareBtn+openingHtml+graphHtml+hlHtml+momentsHtml+table+`<div style="margin-top:6px">${moves}</div>`;
+  const sb=document.getElementById('shareBtn'); if(sb)sb.onclick=shareReport;
+  el.querySelectorAll('.mv').forEach(s=>s.addEventListener('click',()=>gotoPly(+s.dataset.ply)));
+  el.querySelectorAll('.hl-chip,.km-row').forEach(s=>s.addEventListener('click',()=>gotoPly(+s.dataset.ply)));
+  const svg=document.getElementById('evalGraph');
+  if(svg)svg.addEventListener('click',(e)=>{
+    const r=svg.getBoundingClientRect();
+    const i=Math.round((e.clientX-r.left)/r.width*(reviewEvals.length-1));
+    gotoPly(Math.max(0,Math.min(reviewEvals.length-1,i)));
+  });
+  highlightReview();
+}
+function highlightReview(){
+  // sinkronkan penanda grafik + langkah saat ini di daftar langkah ulasan
+  const mk=document.getElementById('graphMarker');
+  if(mk&&reviewEvals&&reviewEvals.length>1){
+    const x=(ply/(reviewEvals.length-1))*440;
+    mk.setAttribute('x1',x);mk.setAttribute('x2',x);
+  }
+  document.querySelectorAll('#reviewList .mv').forEach(s=>s.classList.toggle('cur',+s.dataset.ply===ply));
+}
+
+/* scroll mouse di atas papan: scroll atas = langkah berikutnya, scroll bawah = langkah sebelumnya */
+let wheelAcc=0;
+document.querySelector('.boardbox').addEventListener('wheel',e=>{
+  if(!fullHistory)return; // hanya saat permainan sedang dimuat
+  e.preventDefault();
+  if(wheelAcc!==0 && Math.sign(e.deltaY)!==Math.sign(wheelAcc)) wheelAcc=0; // ganti arah mereset
+  wheelAcc+=e.deltaY;
+  let steps=0;
+  while(wheelAcc<=-80 && steps<2){ wheelAcc+=80; steps++; document.getElementById('navNext').click(); }
+  steps=0;
+  while(wheelAcc>=80 && steps<2){ wheelAcc-=80; steps++; document.getElementById('navPrev').click(); }
+},{passive:false});
+
+/* navigasi keyboard */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+  if(e.key==='ArrowLeft')document.getElementById('navPrev').click();
+  if(e.key==='ArrowRight')document.getElementById('navNext').click();
+  if(e.key==='f')document.getElementById('navFlip').click();
+});
+
+/* checkbox panah: sembunyikan/tampilkan langsung tanpa menunggu analisis berikutnya */
+document.getElementById('showArrow').addEventListener('change',e=>{
+  if(!e.target.checked){const keep=lastArrows;svg.innerHTML='';lastArrows=keep;}
+  else if(lastArrows)drawArrows(lastArrows);
+});
+
+/* ---------- boot ---------- */
+try{
+  const cc=localStorage.getItem('cc_user_cc')||localStorage.getItem('cc_user')||'';
+  const li=localStorage.getItem('cc_user_li')||'';
+  if(cc)document.getElementById('ccUserCc').value=cc;
+  if(li)document.getElementById('ccUserLi').value=li;
+  if(cc)populateMonths();
+}catch(e){}
+render();
+rebuildMoveList();
+initSounds();
+initEngine();
+setTimeout(()=>{ if(engineReady)triggerAnalysis(); else setTimeout(triggerAnalysis,1500); },800);
+
+/* mendaftarkan service worker (app shell offline) — hanya http/https, bukan file:// */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
