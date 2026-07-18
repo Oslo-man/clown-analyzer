@@ -202,9 +202,6 @@
   }
   .src{display:inline-block;font-size:9px;font-weight:800;padding:1px 4px;border-radius:4px;vertical-align:middle;color:#fff}
   .src-cc{background:#6b9b37} .src-li{background:#7b61a8}
-  .credits{text-align:center;color:var(--muted);font-size:11px;padding:16px 0 22px}
-  .credits a{color:var(--muted)}
-  .credits a:hover{color:var(--accent)}
   *::-webkit-scrollbar{width:10px;height:10px}
   *::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;border:2px solid var(--bg)}
   *::-webkit-scrollbar-track{background:transparent}
@@ -263,7 +260,6 @@
 
     <!-- MAIN -->
     <div class="tabpane active" id="tab-play">
-      <p class="small">Klik sebuah bidak, lalu klik kotak tujuannya. Mesin akan menganalisis setiap posisi secara otomatis.</p>
       <button class="btn sec" id="newGame">Permainan baru</button>
       <button class="btn sec" id="undoMove">Batalkan</button>
     </div>
@@ -274,7 +270,6 @@
       <input type="text" id="ccUserCc" placeholder="hikaru  (atau chess.com/member/hikaru)">
       <label class="fld" style="margin-top:8px">🔶 Nama pengguna Lichess</label>
       <input type="text" id="ccUserLi" placeholder="thibault  (atau lichess.org/@/thibault)">
-      <p class="small" style="margin:6px 0 0">Isi salah satu atau keduanya — permainan dari kedua akun akan digabung, terbaru lebih dulu.</p>
       <div class="row" style="margin-top:8px">
         <label class="small">Bulan Chess.com
           <select id="ccMonth"><option value="">terbaru</option></select>
@@ -304,9 +299,8 @@
 
     <!-- ULASAN -->
     <div class="tabpane" id="tab-review">
-      <p class="small">Muat permainan dari tab <b>Impor</b> atau <b>PGN</b> terlebih dahulu, lalu pindai. Setiap langkah akan mendapat lencana kualitas (juga ditampilkan di papan).</p>
       <label class="small">Kedalaman pemindaian
-        <select id="reviewDepth"><option value="14">14 (cepat)</option><option value="16" selected>16 (seimbang)</option><option value="20">20 (dalam)</option><option value="25">25 (maksimal)</option></select>
+        <select id="reviewDepth"><option value="10">10 (kilat)</option><option value="12">12 (sangat cepat)</option><option value="14">14 (cepat)</option><option value="16" selected>16 (seimbang)</option><option value="20">20 (dalam)</option><option value="25">25 (maksimal)</option></select>
       </label>
       <button class="btn" id="runReview">Pindai permainan</button>
       <div id="progress"><div id="progressbar"></div></div>
@@ -315,11 +309,6 @@
   </div>
 </div>
 
-<footer class="credits">
-  Mesin: <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noopener">Stockfish.js</a> (GPL)
-  · <a href="https://github.com/jhlywa/chess.js" target="_blank" rel="noopener">chess.js</a>
-  · Data permainan melalui API publik Chess.com &amp; Lichess
-</footer>
 
 <script src="chess.min.js"></script>
 <script>
