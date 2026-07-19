@@ -69,7 +69,8 @@
   .modal-panel .fld{font-size:12px;color:var(--muted);display:block;margin:0 0 6px}
   .modal-panel select{width:100%}
   .modal-panel .input-row{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;cursor:pointer;color:var(--text)}
-  .judge-text{min-height:1px;margin:2px 0 10px}
+  .bestmove{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px;margin:10px 0;font-size:13px}
+  .bestmove b{color:var(--accent)}
   .wrap{display:flex;gap:22px;padding:18px;align-items:flex-start;justify-content:center}
   .stage{flex:1 1 auto;display:flex;justify-content:center;min-width:0;position:sticky;top:76px}
   .left{display:flex;gap:12px;--bsize:clamp(320px, min(86vh, calc(100vw - 560px)), 900px)}
@@ -248,7 +249,7 @@
     </div>
     <label class="fld" style="margin-top:0">Kedalaman</label>
     <select id="depthSel">
-      <option>10</option><option>12</option><option value="15">15 (Direkomendasikan)</option><option selected>18</option><option>20</option><option>22</option><option>25</option>
+      <option value="12">12 (kilat)</option><option value="13">13</option><option value="14">14 (cepat)</option><option value="15">15 (Direkomendasikan)</option><option value="16">16 (seimbang)</option><option value="18" selected>18 (akurat)</option><option value="20">20 (dalam)</option><option value="22">22 (maksimal)</option>
     </select>
     <label class="input-row"><input type="checkbox" id="autoAnalyze" checked> <span>Analisis otomatis</span></label>
     <label class="input-row"><input type="checkbox" id="showArrow" checked> <span>Panah mesin (3 teratas)</span></label>
@@ -283,7 +284,12 @@
       <button data-tab="review">Ulasan</button>
     </div>
 
-    <div id="judgeText" class="small judge-text"></div>
+    <!-- analisis (selalu terlihat) -->
+    <div class="bestmove" id="analysisBox">
+      <div>Mesin: <b id="bestText">—</b> <span id="depthText" class="small"></span></div>
+      <div id="pvText" class="small" style="margin-top:4px"></div>
+      <div id="judgeText" class="small" style="margin-top:4px"></div>
+    </div>
 
     <button class="btn" id="returnGame" style="display:none;width:100%;margin:-4px 0 10px">↩ Kembali ke permainan</button>
 
@@ -328,7 +334,7 @@
     <!-- ULASAN -->
     <div class="tabpane" id="tab-review">
       <label class="small">Kedalaman pemindaian
-        <select id="reviewDepth"><option value="10">10 (kilat)</option><option value="12">12 (sangat cepat)</option><option value="14">14 (Cepat) (Direkomendasikan)</option><option value="16" selected>16 (seimbang)</option><option value="20">20 (dalam)</option><option value="25">25 (maksimal)</option></select>
+        <select id="reviewDepth"><option value="12">12 (kilat)</option><option value="13">13</option><option value="14">14 (Cepat) (Direkomendasikan)</option><option value="15">15</option><option value="16" selected>16 (seimbang)</option><option value="17">17</option><option value="18">18 (akurat)</option><option value="20">20 (dalam)</option><option value="22">22 (maksimal)</option></select>
       </label>
       <button class="btn" id="runReview">Pindai permainan</button>
       <div id="progress"><div id="progressbar"></div></div>
@@ -1222,9 +1228,8 @@ function renderCcList(st,list){
       const tag=outcome==='W'?'best':outcome==='L'?'blunder':'inacc';
       const yourScore=outcome==='D'?'½-½':outcome==='W'?'1-0':'0-1';
       const wn=w.username||'?',bn=b.username||'?';
-      const youMark=' <span class="num">(Anda)</span>';
-      const wLabel=youAreWhite?`<b>${esc(wn)}</b>${youMark}`:esc(wn);
-      const bLabel=!youAreWhite?`<b>${esc(bn)}</b>${youMark}`:esc(bn);
+      const wLabel=youAreWhite?`<b>${esc(wn)}</b>`:esc(wn);
+      const bLabel=!youAreWhite?`<b>${esc(bn)}</b>`:esc(bn);
       return `<div class="ccgame" data-i="${i}" style="padding:6px 8px;border-radius:6px;cursor:pointer">
         ${srcTag(g._source)} <span class="tag ${tag}">${outcome}</span>
         ${wLabel} (${w.rating||'?'}) vs ${bLabel} (${b.rating||'?'})
@@ -1836,16 +1841,4 @@ document.addEventListener('keydown',e=>{
 try{
   const cc=localStorage.getItem('cc_user_cc')||localStorage.getItem('cc_user')||'';
   const li=localStorage.getItem('cc_user_li')||'';
-  if(cc)document.getElementById('ccUserCc').value=cc;
-  if(li)document.getElementById('ccUserLi').value=li;
-  if(cc)populateMonths();
-}catch(e){}
-render();
-rebuildMoveList();
-initSounds();
-initEngine();
-setTimeout(()=>{ if(engineReady)triggerAnalysis(); else setTimeout(triggerAnalysis,1500); },800);
-
-/* mendaftarkan service worker (app shell offline) — hanya http/https, bukan file:// */
-if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))
+  if(cc)documen
