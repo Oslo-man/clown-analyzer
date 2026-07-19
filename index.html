@@ -130,13 +130,20 @@
   button.btn.sec{background:var(--panel3);color:var(--text);border:1px solid var(--border);box-shadow:none}
   button.btn.sec:hover{border-color:var(--accent);transform:none}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .nav{display:flex;gap:6px;margin:12px 0}
+  .nav{display:flex;gap:6px;margin:0 0 12px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:6px}
   .nav button{
-    flex:1;background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px;
-    border-radius:8px;cursor:pointer;font-size:16px;transition:background .15s,border-color .15s;
+    flex:1;background:transparent;color:var(--text);border:none;padding:9px 6px;
+    border-radius:7px;cursor:pointer;font-size:17px;line-height:1;transition:background .15s,color .15s;
   }
-  .nav button:hover{background:linear-gradient(160deg,#d4af37,#c89f2f);border-color:transparent;color:#2c2825}
+  .nav button:hover{background:linear-gradient(160deg,#d4af37,#c89f2f);color:#2c2825}
   .nav button:active{transform:scale(0.94)}
+  .flip-btn{
+    position:absolute;top:8px;right:8px;z-index:10;width:30px;height:30px;border-radius:7px;
+    background:rgba(38,36,34,.82);border:1px solid var(--border);color:var(--text);
+    cursor:pointer;font-size:15px;line-height:1;backdrop-filter:blur(4px);
+  }
+  .flip-btn:hover{background:var(--panel3);border-color:var(--accent)}
+  .flip-btn:active{transform:scale(0.9)}
   .bestmove{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px;margin:10px 0;font-size:13px}
   .bestmove b{color:var(--accent)}
   .moves{max-height:200px;overflow-y:auto;font-size:13px;line-height:1.9;margin-top:6px}
@@ -153,13 +160,15 @@
   #progress{height:6px;background:var(--panel3);border-radius:4px;overflow:hidden;margin-top:8px;display:none}
   #progressbar{height:100%;width:0;background:linear-gradient(90deg,#d4af37,#c89f2f);transition:width .2s}
   select{background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px;font-family:'Courier New',monospace}
-  .acc-box{background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:10px}
-  .acc-title{font-size:10px;color:var(--muted);font-weight:700;margin-bottom:6px;text-align:center;letter-spacing:1px;text-transform:uppercase;font-family:'Courier New',monospace}
-  .acc-grid{display:flex;gap:10px}
+  .acc-box{background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+  .acc-title{font-size:10px;color:var(--muted);font-weight:700;margin-bottom:8px;text-align:center;letter-spacing:1px;text-transform:uppercase;font-family:'Courier New',monospace}
+  .acc-grid{display:flex;gap:10px;position:relative}
+  .acc-grid::after{content:'';position:absolute;left:50%;top:2px;bottom:2px;width:1px;background:var(--border)}
   .acc-cell{flex:1;text-align:center}
-  .acc-label{font-size:12px;color:var(--muted)}
-  .acc-val{font-size:26px;font-weight:800;line-height:1.1}
-  .acc-elo{font-size:12px;color:var(--muted);margin-top:2px;font-weight:600}
+  .acc-label{font-size:12px;color:var(--muted);font-weight:600}
+  .acc-val{font-size:28px;font-weight:800;line-height:1.3}
+  .section-title{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Courier New',monospace;margin:14px 0 6px}
+  .section-title:first-child{margin-top:0}
   .opening-line{font-size:13px;font-weight:600;margin:0 0 8px;color:var(--text)}
   .graph-box{margin-bottom:10px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
   .graph-box svg{display:block;width:100%;height:96px;cursor:pointer}
@@ -175,18 +184,17 @@
   .rs-count{text-align:center;font-weight:700;color:var(--text)}
   .rs-icon{width:22px;height:22px;object-fit:contain;justify-self:center;display:block}
   .rs-icon-inline{width:15px;height:15px;object-fit:contain;vertical-align:-3px;margin-left:3px}
-  .phase-box{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px}
-  .phase-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
-  .phase-name{font-weight:700;font-size:13px}
-  .phase-acc{font-size:12px;color:var(--muted);font-weight:600;text-align:right}
-  .phase-cats{display:flex;flex-wrap:wrap;gap:6px}
-  .phase-chip{
-    display:inline-flex;align-items:center;gap:5px;background:var(--panel3);border:1px solid var(--border);
-    border-radius:7px;padding:4px 7px;cursor:pointer;font-family:'Georgia',serif;
+  .phase-box{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:4px 12px;margin-bottom:10px}
+  .phase-row{display:grid;grid-template-columns:1fr 40px 40px;align-items:center;gap:8px;padding:9px 0}
+  .phase-row+.phase-row{border-top:1px solid var(--border)}
+  .phase-grade-btn{
+    display:flex;align-items:center;justify-content:center;background:var(--panel3);
+    border:1px solid var(--border);border-radius:8px;padding:5px;cursor:pointer;justify-self:center;
   }
-  .phase-chip:hover{border-color:var(--accent)}
-  .phase-chip img{width:18px;height:18px;object-fit:contain;display:block}
-  .phase-chip-count{color:var(--muted);font-weight:700;font-size:11px}
+  .phase-grade-btn:hover{border-color:var(--accent)}
+  .phase-grade-btn:active{transform:scale(0.93)}
+  .phase-grade-btn img{width:20px;height:20px;object-fit:contain;display:block}
+  .phase-grade-btn.empty{background:transparent;border-color:transparent;cursor:default}
   .ld-box{display:none;background:var(--panel2);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin-bottom:10px}
   .ld-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .ld-head img{width:20px;height:20px;object-fit:contain}
@@ -204,8 +212,6 @@
   }
   .src{display:inline-block;font-size:9px;font-weight:800;padding:1px 4px;border-radius:4px;vertical-align:middle;color:#fff}
   .src-cc{background:#6b9b37} .src-li{background:#7b61a8}
-  .engine-status-bottom{text-align:center;color:var(--muted);font-size:11px;padding:14px 0 26px;font-family:'Courier New',monospace}
-  .engine-status-bottom b{color:var(--text);font-weight:600}
   *::-webkit-scrollbar{width:10px;height:10px}
   *::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;border:2px solid var(--bg)}
   *::-webkit-scrollbar-track{background:transparent}
@@ -221,6 +227,7 @@
     <div class="left">
       <div id="evalbar"><div id="evalfill"></div><div id="evaltext">0.0</div></div>
       <div class="boardbox">
+        <button type="button" class="flip-btn" id="navFlip" title="Balik papan">⟳</button>
         <div id="board"></div>
         <svg id="arrowsvg" viewBox="0 0 8 8" preserveAspectRatio="none"></svg>
       </div>
@@ -228,6 +235,13 @@
   </div>
 
   <div class="panel">
+    <div class="nav">
+      <button id="navStart" title="Awal">⏮</button>
+      <button id="navPrev" title="Sebelumnya">◀</button>
+      <button id="navNext" title="Berikutnya">▶</button>
+      <button id="navEnd" title="Akhir">⏭</button>
+    </div>
+
     <div class="tabs">
       <button data-tab="play" class="active">Main</button>
       <button data-tab="chesscom">Impor</button>
@@ -252,13 +266,6 @@
       <label class="small"><input type="checkbox" id="showArrow" checked> Panah mesin (3 teratas)</label>
     </div>
 
-    <div class="nav">
-      <button id="navStart" title="Awal">⏮</button>
-      <button id="navPrev" title="Sebelumnya">◀</button>
-      <button id="navNext" title="Berikutnya">▶</button>
-      <button id="navEnd" title="Akhir">⏭</button>
-      <button id="navFlip" title="Balik papan">⟳</button>
-    </div>
     <button class="btn" id="returnGame" style="display:none;width:100%;margin:-4px 0 10px">↩ Kembali ke permainan</button>
 
     <!-- MAIN -->
@@ -310,8 +317,6 @@
     </div>
   </div>
 </div>
-
-<div class="engine-status-bottom">Status Mesin: <b id="engineStatus">Memuat mesin…</b></div>
 
 <script src="chess.min.js"></script>
 <script>
@@ -1352,7 +1357,7 @@ const CATS={
   blunder:{label:'Blunder',icon:'??',img:'blunder.png',color:'#d24a4a',group:'bad'},
 };
 const GOOD_ORDER=['brilliant','great','best','excellent','good','book'];
-const BAD_ORDER=['inaccuracy','mistake','miss','blunder'];
+const BAD_ORDER=['inaccuracy','mistake','blunder','miss'];
 const ALL_ORDER=GOOD_ORDER.concat(BAD_ORDER);
 const PHASE_LABEL={opening:'Pembukaan',middlegame:'Permainan Tengah',endgame:'Permainan Akhir'};
 const PHASE_ORDER=['opening','middlegame','endgame'];
@@ -1404,6 +1409,17 @@ function computePhases(fens, bookPlies){
     else phases[i]='endgame';
   }
   return phases;
+}
+/* memetakan akurasi (0-100) ke satu kategori label sebagai "nilai" ringkas untuk sebuah fase permainan */
+function phaseGradeCat(acc){
+  if(acc==null) return null;
+  if(acc>=97) return 'best';
+  if(acc>=90) return 'excellent';
+  if(acc>=80) return 'great';
+  if(acc>=65) return 'good';
+  if(acc>=50) return 'inaccuracy';
+  if(acc>=30) return 'mistake';
+  return 'blunder';
 }
 
 /* ---------- Kartu laporan sebagai gambar untuk dibagikan ---------- */
@@ -1626,7 +1642,7 @@ function renderReview(){
     const d=reviewData[i]; if(!d)continue;
     counts[d.moverWhite?'w':'b'][d.cat]++;
   }
-  // daftar kategori tunggal (Bagus + Buruk digabung), ikon berupa gambar
+  // daftar statistik langkah tunggal (Bagus + Buruk digabung), ikon berupa gambar
   const catRows=ALL_ORDER.map(c=>{
     const m=CATS[c];
     return `<div class="rs-row">
@@ -1636,20 +1652,24 @@ function renderReview(){
       <span class="rs-count">${counts.b[c]}</span></div>`;
   }).join('');
 
-  // header akurasi + perkiraan Elo (profil pemain = Putih/Hitam saja)
-  const accColor=accColorOf, estElo=estEloOf;
-  const accCell=(label,v)=>{
-    const txt=(v==null)?'—':v.toFixed(1)+'%';
-    const col=(v==null)?'var(--muted)':accColor(v);
-    const elo=estElo(v);
-    return `<div class="acc-cell"><div class="acc-label">${label}</div>
-      <div class="acc-val" style="color:${col}">${txt}</div>
-      <div class="acc-elo">${elo==null?'':'≈ '+elo+' Elo'}</div></div>`;
-  };
-  const accuracy=reviewAccuracy?`<div class="acc-box">
-    <div class="acc-title">Akurasi &amp; perkiraan rating</div>
-    <div class="acc-grid">${accCell('Putih',reviewAccuracy.w)}${accCell('Hitam',reviewAccuracy.b)}</div>
-  </div>`:'';
+  // kotak dua-kolom generik (dipakai untuk Akurasi & Rating Permainan) — profil pemain = Putih/Hitam saja
+  const twoColBox=(title,wText,bText,wColor,bColor)=>`<div class="acc-box">
+    <div class="acc-title">${title}</div>
+    <div class="acc-grid">
+      <div class="acc-cell"><div class="acc-label">Putih</div><div class="acc-val" style="color:${wColor||'var(--text)'}">${wText}</div></div>
+      <div class="acc-cell"><div class="acc-label">Hitam</div><div class="acc-val" style="color:${bColor||'var(--text)'}">${bText}</div></div>
+    </div>
+  </div>`;
+
+  const accuracy=reviewAccuracy?twoColBox('Akurasi',
+    reviewAccuracy.w==null?'—':reviewAccuracy.w.toFixed(1),
+    reviewAccuracy.b==null?'—':reviewAccuracy.b.toFixed(1),
+    reviewAccuracy.w==null?null:accColorOf(reviewAccuracy.w),
+    reviewAccuracy.b==null?null:accColorOf(reviewAccuracy.b)):'';
+
+  const wElo=estEloOf(reviewAccuracy&&reviewAccuracy.w), bElo=estEloOf(reviewAccuracy&&reviewAccuracy.b);
+  const ratingBox=reviewAccuracy?twoColBox('Rating Permainan',
+    wElo==null?'—':String(wElo), bElo==null?'—':String(bElo)):'';
 
   // nama pembukaan
   const openingHtml=(gameMeta&&gameMeta.opening)?
@@ -1681,29 +1701,28 @@ function renderReview(){
     </svg></div>`;
   }
 
-  // fase permainan: Pembukaan / Permainan Tengah / Permainan Akhir — akurasi + distribusi label per fase
+  // fase permainan: Pembukaan / Permainan Tengah / Permainan Akhir — satu label langkah (berdasarkan
+  // akurasi fase tsb) per sisi; menekan ikon menampilkan box kecil berisi akurasinya
   let phaseHtml='';
   if(reviewPhases){
-    phaseHtml=PHASE_ORDER.map(key=>{
+    const phaseRows=PHASE_ORDER.map(key=>{
       const idxs=[]; for(let i=0;i<fullHistory.length;i++) if(reviewPhases[i]===key) idxs.push(i);
-      const wIdx=idxs.filter(i=>reviewData[i].moverWhite), bIdx=idxs.filter(i=>!reviewData[i].moverWhite);
-      const wAcc=gameAccFor(wIdx), bAcc=gameAccFor(bIdx);
-      const cats={}; ALL_ORDER.forEach(c=>cats[c]={w:0,b:0});
-      idxs.forEach(i=>{ const d=reviewData[i]; cats[d.cat][d.moverWhite?'w':'b']++; });
-      const chips=ALL_ORDER.filter(c=>cats[c].w+cats[c].b>0).map(c=>{
-        const m=CATS[c];
-        return `<button type="button" class="phase-chip" data-phase="${key}" data-cat="${c}">
-          <img src="${m.img}" alt="${m.label}" title="${m.label}">
-          <span class="phase-chip-count">${cats[c].w}/${cats[c].b}</span></button>`;
-      }).join('');
-      return `<div class="phase-box">
-        <div class="phase-head">
-          <span class="phase-name">${PHASE_LABEL[key]}</span>
-          <span class="phase-acc">${wAcc==null?'—':wAcc.toFixed(1)+'%'} · ${bAcc==null?'—':bAcc.toFixed(1)+'%'}</span>
-        </div>
-        <div class="phase-cats">${chips || '<span class="small">Tidak ada langkah pada fase ini</span>'}</div>
+      const wAcc=gameAccFor(idxs.filter(i=>reviewData[i].moverWhite));
+      const bAcc=gameAccFor(idxs.filter(i=>!reviewData[i].moverWhite));
+      const wCat=phaseGradeCat(wAcc), bCat=phaseGradeCat(bAcc);
+      const gradeBtn=(side,cat)=>{
+        if(!cat) return `<span class="phase-grade-btn empty">—</span>`;
+        const m=CATS[cat];
+        return `<button type="button" class="phase-grade-btn" data-phase="${key}" data-side="${side}">
+          <img src="${m.img}" alt="${m.label}" title="${side==='w'?'Putih':'Hitam'} · ${m.label}"></button>`;
+      };
+      return `<div class="phase-row">
+        <span class="rs-label">${PHASE_LABEL[key]}</span>
+        ${gradeBtn('w',wCat)}
+        ${gradeBtn('b',bCat)}
       </div>`;
     }).join('');
+    phaseHtml=`<div class="phase-box">${phaseRows}</div>`;
   }
 
   let movesHtml='';
@@ -1714,14 +1733,16 @@ function renderReview(){
     movesHtml+=`<span class="mv" data-ply="${i+1}">${fullHistory[i]}${badge}</span>`;
   }
   const shareBtn=reviewAccuracy?`<button class="btn" id="shareBtn" style="width:100%;margin:0 0 10px">📤 Bagikan kartu laporan</button>`:'';
-  el.innerHTML=accuracy+shareBtn+openingHtml+graphHtml
-    +`<div class="rs-list">${catRows}</div>`
+  el.innerHTML=graphHtml+openingHtml
+    +accuracy+shareBtn
+    +`<div class="section-title">Statistik Langkah</div><div class="rs-list">${catRows}</div>`
+    +ratingBox
+    +`<div class="section-title">Fase Permainan</div>${phaseHtml}`
     +`<div id="labelDetailBox" class="ld-box"></div>`
-    +phaseHtml
-    +`<div style="margin-top:6px">${movesHtml}</div>`;
+    +`<div class="section-title">Riwayat Langkah</div><div>${movesHtml}</div>`;
   const sb=document.getElementById('shareBtn'); if(sb)sb.onclick=shareReport;
   el.querySelectorAll('.mv').forEach(s=>s.addEventListener('click',()=>gotoPly(+s.dataset.ply)));
-  el.querySelectorAll('.phase-chip').forEach(b=>b.addEventListener('click',()=>showLabelDetail(b.dataset.phase,b.dataset.cat)));
+  el.querySelectorAll('.phase-grade-btn[data-phase]').forEach(b=>b.addEventListener('click',()=>showPhaseAccuracy(b.dataset.phase,b.dataset.side)));
   const svg=document.getElementById('evalGraph');
   if(svg)svg.addEventListener('click',(e)=>{
     const r=svg.getBoundingClientRect();
@@ -1730,38 +1751,22 @@ function renderReview(){
   });
   highlightReview();
 }
-/* Menampilkan detail akurasi & evaluasi untuk satu label langkah pada satu fase permainan,
-   dipicu dengan menekan ikon label pada bagian fase permainan. */
-function showLabelDetail(phase,cat){
+/* Menampilkan box kecil berisi akurasi untuk satu sisi pada satu fase permainan,
+   dipicu dengan menekan ikon label langkah pada bagian Fase Permainan. */
+function showPhaseAccuracy(phase,side){
   const box=document.getElementById('labelDetailBox');
-  if(!box)return;
-  const m=CATS[cat];
-  const entries=[];
-  for(let i=0;i<fullHistory.length;i++){
-    if(reviewPhases && reviewPhases[i]===phase && reviewData[i] && reviewData[i].cat===cat){
-      entries.push({i, mv:fullHistory[i], white:reviewData[i].moverWhite, cl:reviewData[i].cl});
-    }
-  }
-  const wEntries=entries.filter(e=>e.white), bEntries=entries.filter(e=>!e.white);
-  const avg=(list,pick)=> list.length? (list.reduce((a,e)=>a+pick(e),0)/list.length) : null;
-  const wLoss=avg(wEntries,e=>e.cl), bLoss=avg(bEntries,e=>e.cl);
-  const wAcc=avg(wEntries,e=>reviewMoveAcc?reviewMoveAcc[e.i]:0), bAcc=avg(bEntries,e=>reviewMoveAcc?reviewMoveAcc[e.i]:0);
-  const statLine=(label,n,accV,lossV)=>`<span>${label}: <b>${n}</b> langkah${accV!=null?` · akurasi ${accV.toFixed(1)}%`:''}${lossV!=null?` · kehilangan ${Math.round(lossV)}cp`:''}</span>`;
-  const movesHtml=entries.map(e=>{
-    const mvNum=Math.floor(e.i/2)+1+(e.i%2?'… ':'. ');
-    return `<span class="hl-chip" data-ply="${e.i+1}">${mvNum}${e.mv} <span class="small">(${e.white?'Putih':'Hitam'})</span></span>`;
-  }).join('');
-  box.innerHTML=`<div class="ld-head"><img src="${m.img}" alt="${m.label}"><b>${m.label}</b><span class="small">· ${PHASE_LABEL[phase]}</span>
+  if(!box||!reviewPhases)return;
+  const idxs=[]; for(let i=0;i<fullHistory.length;i++) if(reviewPhases[i]===phase && reviewData[i].moverWhite===(side==='w')) idxs.push(i);
+  const acc=gameAccFor(idxs);
+  const cat=phaseGradeCat(acc);
+  const m=cat?CATS[cat]:null;
+  box.innerHTML=`<div class="ld-head">${m?`<img src="${m.img}" alt="${m.label}">`:''}<b>${PHASE_LABEL[phase]} · ${side==='w'?'Putih':'Hitam'}</b>
       <button type="button" class="ld-close" id="ldClose">×</button></div>
-    <div class="ld-stats">
-      ${statLine('Putih',wEntries.length,wAcc,wLoss)}
-      ${statLine('Hitam',bEntries.length,bAcc,bLoss)}
-    </div>
-    ${movesHtml?`<div class="ld-moves">${movesHtml}</div>`:'<div class="small">Tidak ada langkah pada fase ini.</div>'}`;
+    <div class="ld-stats"><span>Akurasi fase ini: <b>${acc==null?'—':acc.toFixed(1)+'%'}</b>${m?` · ${m.label}`:''}</span>
+    <span>${idxs.length} langkah dihitung pada fase ini</span></div>`;
   box.style.display='block';
   const closeBtn=document.getElementById('ldClose');
   if(closeBtn)closeBtn.onclick=()=>{box.style.display='none';};
-  box.querySelectorAll('.hl-chip').forEach(s=>s.addEventListener('click',()=>{gotoPly(+s.dataset.ply);}));
   box.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function highlightReview(){
