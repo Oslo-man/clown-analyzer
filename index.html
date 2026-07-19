@@ -36,14 +36,40 @@
   header{
     position:sticky;top:0;z-index:50;background:rgba(38,36,34,.86);
     backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
-    padding:12px 22px;display:flex;align-items:center;justify-content:center;gap:12px;
+    padding:12px 22px;display:flex;align-items:center;justify-content:center;gap:12px;position:relative;
   }
-  header h1{font-size:19px;margin:0;font-weight:700;font-style:italic;letter-spacing:.2px;text-align:center}
-  header h1 .logo-emoji{-webkit-text-fill-color:initial}
+  header h1{font-size:19px;margin:0;font-weight:700;font-style:italic;letter-spacing:.2px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px}
+  .logo-img{width:26px;height:26px;border-radius:6px;object-fit:cover;display:block}
   header h1 .logo-text{
     background:linear-gradient(90deg,#d4af37 0%,#f0d060 100%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
+  .settings-btn{
+    position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    width:34px;height:34px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);
+    color:var(--text);font-size:17px;cursor:pointer;
+  }
+  .settings-btn:hover{border-color:var(--accent)}
+  .settings-btn:active{transform:translateY(-50%) scale(0.92)}
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex}
+  .modal-panel{
+    width:100%;max-width:380px;background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 16px 48px rgba(0,0,0,.6);
+  }
+  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .modal-title{font-size:15px;font-weight:700;font-style:italic}
+  .modal-close{
+    width:28px;height:28px;border-radius:50%;background:var(--panel3);border:1px solid var(--border);
+    color:var(--text);font-size:16px;cursor:pointer;line-height:1;
+  }
+  .modal-panel .fld{font-size:12px;color:var(--muted);display:block;margin:0 0 6px}
+  .modal-panel select{width:100%}
+  .modal-panel .input-row{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;cursor:pointer;color:var(--text)}
+  .judge-text{min-height:1px;margin:2px 0 10px}
   .wrap{display:flex;gap:22px;padding:18px;align-items:flex-start;justify-content:center}
   .stage{flex:1 1 auto;display:flex;justify-content:center;min-width:0;position:sticky;top:76px}
   .left{display:flex;gap:12px;--bsize:clamp(320px, min(86vh, calc(100vw - 560px)), 900px)}
@@ -137,15 +163,6 @@
   }
   .nav button:hover{background:linear-gradient(160deg,#d4af37,#c89f2f);color:#2c2825}
   .nav button:active{transform:scale(0.94)}
-  .flip-btn{
-    position:absolute;top:8px;right:8px;z-index:10;width:30px;height:30px;border-radius:7px;
-    background:rgba(38,36,34,.82);border:1px solid var(--border);color:var(--text);
-    cursor:pointer;font-size:15px;line-height:1;backdrop-filter:blur(4px);
-  }
-  .flip-btn:hover{background:var(--panel3);border-color:var(--accent)}
-  .flip-btn:active{transform:scale(0.9)}
-  .bestmove{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px;margin:10px 0;font-size:13px}
-  .bestmove b{color:var(--accent)}
   .moves{max-height:200px;overflow-y:auto;font-size:13px;line-height:1.9;margin-top:6px}
   #moveList{max-height:none;overflow:visible}
   .moves .mv{display:inline-block;padding:1px 6px;border-radius:4px;cursor:pointer;margin:1px}
@@ -219,15 +236,30 @@
 </head>
 <body>
 <header>
-  <h1><span class="logo-emoji">♟</span> <span class="logo-text">Fahri Game Review</span></h1>
+  <h1><img src="logo_fahriengine/Fahriengine.png" alt="Fahri" class="logo-img"> <span class="logo-text">Fahri Game Review</span></h1>
+  <button type="button" class="settings-btn" id="settingsBtn" title="Pengaturan">⚙</button>
 </header>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <span class="modal-title">⚙ Pengaturan</span>
+      <button type="button" class="modal-close" id="settingsClose">×</button>
+    </div>
+    <label class="fld" style="margin-top:0">Kedalaman</label>
+    <select id="depthSel">
+      <option>10</option><option>12</option><option value="15">15 (Direkomendasikan)</option><option selected>18</option><option>20</option><option>22</option><option>25</option>
+    </select>
+    <label class="input-row"><input type="checkbox" id="autoAnalyze" checked> <span>Analisis otomatis</span></label>
+    <label class="input-row"><input type="checkbox" id="showArrow" checked> <span>Panah mesin (3 teratas)</span></label>
+  </div>
+</div>
 
 <div class="wrap">
   <div class="stage">
     <div class="left">
       <div id="evalbar"><div id="evalfill"></div><div id="evaltext">0.0</div></div>
       <div class="boardbox">
-        <button type="button" class="flip-btn" id="navFlip" title="Balik papan">⟳</button>
         <div id="board"></div>
         <svg id="arrowsvg" viewBox="0 0 8 8" preserveAspectRatio="none"></svg>
       </div>
@@ -240,6 +272,7 @@
       <button id="navPrev" title="Sebelumnya">◀</button>
       <button id="navNext" title="Berikutnya">▶</button>
       <button id="navEnd" title="Akhir">⏭</button>
+      <button id="navFlip" title="Balik papan">⟳</button>
     </div>
 
     <div class="tabs">
@@ -250,21 +283,7 @@
       <button data-tab="review">Ulasan</button>
     </div>
 
-    <!-- analisis (selalu terlihat) -->
-    <div class="bestmove" id="analysisBox">
-      <div>Mesin: <b id="bestText">—</b> <span id="depthText" class="small"></span></div>
-      <div id="pvText" class="small" style="margin-top:4px"></div>
-      <div id="judgeText" class="small" style="margin-top:4px"></div>
-    </div>
-    <div class="row">
-      <label class="small">Kedalaman
-        <select id="depthSel">
-          <option>10</option><option>12</option><option value="15">15 (Direkomendasikan)</option><option selected>18</option><option>20</option><option>22</option><option>25</option>
-        </select>
-      </label>
-      <label class="small"><input type="checkbox" id="autoAnalyze" checked> Analisis otomatis</label>
-      <label class="small"><input type="checkbox" id="showArrow" checked> Panah mesin (3 teratas)</label>
-    </div>
+    <div id="judgeText" class="small judge-text"></div>
 
     <button class="btn" id="returnGame" style="display:none;width:100%;margin:-4px 0 10px">↩ Kembali ke permainan</button>
 
@@ -868,7 +887,7 @@ function triggerAnalysis(){
   analyze(fen,depth,(m,byPv,idx)=>{
     if(idx===1){ // bar evaluasi + baris terbaik hanya mengikuti baris mesin teratas
       showEval(m,turn);
-      document.getElementById('depthText').textContent='(d'+(m.depth||'')+')';
+      const dt=document.getElementById('depthText'); if(dt)dt.textContent='(d'+(m.depth||'')+')';
       if(m.pv) setBest(prettyPV(fen,m.pv.slice(0,1))[0]||m.pv[0], prettyPV(fen,m.pv.slice(0,6)).join(' '));
     }
     if(byPv){ // simpan snapshot analisis posisi ini (dipakai untuk menilai langkah berikutnya yang dicoba)
@@ -895,7 +914,7 @@ function triggerAnalysis(){
     }
   },(bm,m)=>{
     showEval(m,turn);
-    document.getElementById('depthText').textContent='(final d'+(m.depth||'')+')';
+    const dt2=document.getElementById('depthText'); if(dt2)dt2.textContent='(final d'+(m.depth||'')+')';
     const afterEvW=toW(sv(m));
     if(liveAnal&&liveAnal.fen===fen)liveAnal.evW=afterEvW;
     // nilai langkah yang baru dicoba pengguna, setelah posisinya selesai dianalisis penuh
@@ -960,7 +979,7 @@ function paintEvalBar(){
   text.style.top=atBottom?'auto':'4px';
   text.style.bottom=atBottom?'4px':'auto';
 }
-function setBest(a,b){document.getElementById('bestText').textContent=a;document.getElementById('pvText').textContent=b;}
+function setBest(a,b){const bt=document.getElementById('bestText');if(bt)bt.textContent=a;const pv=document.getElementById('pvText');if(pv)pv.textContent=b;}
 
 /* mengubah daftar langkah UCI menjadi SAN, memakai game sementara dari fen */
 function prettyPV(fen,uciList){
@@ -1058,6 +1077,18 @@ document.getElementById('navFlip').onclick=()=>{
   flipped=!flipped;render();paintEvalBar();
   if(lastArrows&&document.getElementById('showArrow').checked)drawArrows(lastArrows);
 };
+
+/* ---------- Pengaturan (modal) ---------- */
+document.getElementById('settingsBtn').onclick=()=>{document.getElementById('settingsModal').classList.add('open');};
+document.getElementById('settingsClose').onclick=()=>{document.getElementById('settingsModal').classList.remove('open');};
+document.getElementById('settingsModal').addEventListener('click',(e)=>{
+  if(e.target.id==='settingsModal')e.currentTarget.classList.remove('open');
+});
+/* checkbox panah: sembunyikan/tampilkan langsung tanpa menunggu analisis berikutnya */
+document.getElementById('showArrow').addEventListener('change',(e)=>{
+  if(!e.target.checked){const keep=lastArrows;svg.innerHTML='';lastArrows=keep;}
+  else if(lastArrows)drawArrows(lastArrows);
+});
 
 /* ---------- Tab ---------- */
 function switchTab(name){
@@ -1345,16 +1376,16 @@ function extractGameMeta(pgn, sans){
 
 /* ---------- Metadata klasifikasi kualitas langkah ---------- */
 const CATS={
-  brilliant:{label:'Brilian',icon:'!!',img:'brilliant.png',color:'#1aa6a6',group:'good'},
-  great:{label:'Bagus',icon:'!',img:'great.png',color:'#3b8fd4',group:'good'},
-  best:{label:'Terbaik',icon:'★',img:'bestmove.png',color:'#5fb35f',group:'good'},
-  excellent:{label:'Sangat Baik',icon:'✓',img:'excellent.png',color:'#8ab84a',group:'good'},
-  good:{label:'Baik',icon:'○',img:'good.png',color:'#a9b34a',group:'good'},
-  book:{label:'Buku',icon:'▦',img:'book.png',color:'#b07a3c',group:'good'},
-  inaccuracy:{label:'Tidak Akurat',icon:'?!',img:'inaccuracy.png',color:'#e0c04a',group:'bad'},
-  mistake:{label:'Kesalahan',icon:'?',img:'mistake.png',color:'#e08a3c',group:'bad'},
-  miss:{label:'Terlewat',icon:'✗',img:'miss.png',color:'#e0654a',group:'bad'},
-  blunder:{label:'Blunder',icon:'??',img:'blunder.png',color:'#d24a4a',group:'bad'},
+  brilliant:{label:'Brilian',icon:'!!',img:'logo_fahriengine/brilliant.png',color:'#1aa6a6',group:'good'},
+  great:{label:'Bagus',icon:'!',img:'logo_fahriengine/great.png',color:'#3b8fd4',group:'good'},
+  best:{label:'Terbaik',icon:'★',img:'logo_fahriengine/best.png',color:'#5fb35f',group:'good'},
+  excellent:{label:'Sangat Baik',icon:'✓',img:'logo_fahriengine/excellent.png',color:'#8ab84a',group:'good'},
+  good:{label:'Baik',icon:'○',img:'logo_fahriengine/good.png',color:'#a9b34a',group:'good'},
+  book:{label:'Buku',icon:'▦',img:'logo_fahriengine/book.png',color:'#b07a3c',group:'good'},
+  inaccuracy:{label:'Tidak Akurat',icon:'?!',img:'logo_fahriengine/inaccuracy.png',color:'#e0c04a',group:'bad'},
+  mistake:{label:'Kesalahan',icon:'?',img:'logo_fahriengine/mistake.png',color:'#e08a3c',group:'bad'},
+  miss:{label:'Terlewat',icon:'✗',img:'logo_fahriengine/miss.png',color:'#e0654a',group:'bad'},
+  blunder:{label:'Blunder',icon:'??',img:'logo_fahriengine/blunder.png',color:'#d24a4a',group:'bad'},
 };
 const GOOD_ORDER=['brilliant','great','best','excellent','good','book'];
 const BAD_ORDER=['inaccuracy','mistake','blunder','miss'];
@@ -1732,14 +1763,15 @@ function renderReview(){
     const badge=m?` <img class="rs-icon-inline" src="${m.img}" alt="${m.label}" title="${m.label}">`:'';
     movesHtml+=`<span class="mv" data-ply="${i+1}">${fullHistory[i]}${badge}</span>`;
   }
-  const shareBtn=reviewAccuracy?`<button class="btn" id="shareBtn" style="width:100%;margin:0 0 10px">📤 Bagikan kartu laporan</button>`:'';
-  el.innerHTML=graphHtml+openingHtml
-    +accuracy+shareBtn
+  const shareBtn=reviewAccuracy?`<button class="btn" id="shareBtn" style="width:100%;margin:10px 0 0">📤 Bagikan kartu laporan</button>`:'';
+  el.innerHTML=openingHtml+graphHtml
+    +accuracy
     +`<div class="section-title">Statistik Langkah</div><div class="rs-list">${catRows}</div>`
     +ratingBox
     +`<div class="section-title">Fase Permainan</div>${phaseHtml}`
     +`<div id="labelDetailBox" class="ld-box"></div>`
-    +`<div class="section-title">Riwayat Langkah</div><div>${movesHtml}</div>`;
+    +`<div class="section-title">Riwayat Langkah</div><div>${movesHtml}</div>`
+    +shareBtn;
   const sb=document.getElementById('shareBtn'); if(sb)sb.onclick=shareReport;
   el.querySelectorAll('.mv').forEach(s=>s.addEventListener('click',()=>gotoPly(+s.dataset.ply)));
   el.querySelectorAll('.phase-grade-btn[data-phase]').forEach(b=>b.addEventListener('click',()=>showPhaseAccuracy(b.dataset.phase,b.dataset.side)));
@@ -1800,12 +1832,6 @@ document.addEventListener('keydown',e=>{
   if(e.key==='f')document.getElementById('navFlip').click();
 });
 
-/* checkbox panah: sembunyikan/tampilkan langsung tanpa menunggu analisis berikutnya */
-document.getElementById('showArrow').addEventListener('change',e=>{
-  if(!e.target.checked){const keep=lastArrows;svg.innerHTML='';lastArrows=keep;}
-  else if(lastArrows)drawArrows(lastArrows);
-});
-
 /* ---------- boot ---------- */
 try{
   const cc=localStorage.getItem('cc_user_cc')||localStorage.getItem('cc_user')||'';
@@ -1822,8 +1848,4 @@ setTimeout(()=>{ if(engineReady)triggerAnalysis(); else setTimeout(triggerAnalys
 
 /* mendaftarkan service worker (app shell offline) — hanya http/https, bukan file:// */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-}
-</script>
-</body>
-</html>
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))
