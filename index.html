@@ -1343,16 +1343,16 @@ function extractGameMeta(pgn, sans){
 
 /* ---------- Metadata klasifikasi kualitas langkah ---------- */
 const CATS={
-  brilliant:{label:'Brilian',icon:'!!',img:'logo_fahriengine/brilliant.png',color:'#1aa6a6',group:'good'},
-  great:{label:'Bagus',icon:'!',img:'logo_fahriengine/great.png',color:'#3b8fd4',group:'good'},
-  best:{label:'Terbaik',icon:'★',img:'logo_fahriengine/best.png',color:'#5fb35f',group:'good'},
-  excellent:{label:'Sangat Baik',icon:'✓',img:'logo_fahriengine/excellent.png',color:'#8ab84a',group:'good'},
-  good:{label:'Baik',icon:'○',img:'logo_fahriengine/good.png',color:'#a9b34a',group:'good'},
-  book:{label:'Buku',icon:'▦',img:'logo_fahriengine/book.png',color:'#b07a3c',group:'good'},
-  inaccuracy:{label:'Tidak Akurat',icon:'?!',img:'logo_fahriengine/inaccuracy.png',color:'#e0c04a',group:'bad'},
-  mistake:{label:'Kesalahan',icon:'?',img:'logo_fahriengine/mistake.png',color:'#e08a3c',group:'bad'},
-  miss:{label:'Terlewat',icon:'✗',img:'logo_fahriengine/miss.png',color:'#e0654a',group:'bad'},
-  blunder:{label:'Blunder',icon:'??',img:'logo_fahriengine/blunder.png',color:'#d24a4a',group:'bad'},
+    brilliant:{label:'Brilian',icon:'!!',img:'brilliant.png',color:'#1aa6a6',group:'good'},
+great:{label:'Bagus',icon:'!',img:'great.png',color:'#3b8fd4',group:'good'},
+best:{label:'Terbaik',icon:'★',img:'best.png',color:'#5fb35f',group:'good'},
+excellent:{label:'Sangat Baik',icon:'✓',img:'excellent.png',color:'#8ab84a',group:'good'},
+good:{label:'Baik',icon:'○',img:'good.png',color:'#a9b34a',group:'good'},
+book:{label:'Buku',icon:'▦',img:'book.png',color:'#b07a3c',group:'good'},
+inaccuracy:{label:'Tidak Akurat',icon:'?!',img:'inaccuracy.png',color:'#e0c04a',group:'bad'},
+mistake:{label:'Kesalahan',icon:'?',img:'mistake.png',color:'#e08a3c',group:'bad'},
+miss:{label:'Terlewat',icon:'✗',img:'miss.png',color:'#e0654a',group:'bad'},
+blunder:{label:'Blunder',icon:'??',img:'blunder.png',color:'#d24a4a',group:'bad'},
 };
 const GOOD_ORDER=['brilliant','great','best','excellent','good','book'];
 const BAD_ORDER=['inaccuracy','mistake','blunder','miss'];
