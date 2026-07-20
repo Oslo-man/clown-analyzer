@@ -177,6 +177,10 @@
   .rs-count{text-align:center;font-weight:700;color:var(--text)}
   .rs-icon{width:22px;height:22px;object-fit:contain;justify-self:center;display:block}
   .rs-icon-inline{width:15px;height:15px;object-fit:contain;vertical-align:-3px;margin-left:3px}
+  .icon-fallback{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;color:#fff;font-weight:800;line-height:1}
+  .rs-icon.icon-fallback{font-size:9px}
+  .rs-icon-inline.icon-fallback{font-size:7px}
+  .movebadge.icon-fallback{font-size:11px}
   .phase-box{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:4px 12px;margin-bottom:10px}
   .phase-row{display:grid;grid-template-columns:1fr 40px 40px;align-items:center;gap:8px;padding:9px 0}
   .phase-row+.phase-row{border-top:1px solid var(--border)}
@@ -187,10 +191,12 @@
   .phase-grade-btn:hover{border-color:var(--accent)}
   .phase-grade-btn:active{transform:scale(0.93)}
   .phase-grade-btn img{width:20px;height:20px;object-fit:contain;display:block}
+  .phase-grade-btn .icon-fallback{width:20px;height:20px;font-size:9px}
   .phase-grade-btn.empty{background:transparent;border-color:transparent;cursor:default}
   .ld-box{display:none;background:var(--panel2);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin-bottom:10px}
   .ld-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .ld-head img{width:20px;height:20px;object-fit:contain}
+  .ld-head .icon-fallback{width:20px;height:20px;font-size:9px}
   .ld-head b{font-size:13px}
   .ld-close{
     margin-left:auto;width:22px;height:22px;border-radius:50%;background:var(--panel3);
@@ -243,6 +249,8 @@
       <button data-tab="review">Ulasan</button>
     </div>
 
+    <button class="btn" id="returnGame" style="display:none;width:100%;margin:0 0 10px">↩ Kembali ke permainan</button>
+
     <!-- analisis (selalu terlihat) -->
     <div class="bestmove" id="analysisBox">
       <div>Mesin: <b id="bestText">—</b> <span id="depthText" class="small"></span></div>
@@ -259,7 +267,6 @@
       <label class="small"><input type="checkbox" id="showArrow" checked> Panah mesin (3 teratas)</label>
     </div>
 
-    <button class="btn" id="returnGame" style="display:none;width:100%;margin:-4px 0 10px">↩ Kembali ke permainan</button>
 
     <!-- MAIN -->
     <div class="tabpane active" id="tab-play">
@@ -651,6 +658,7 @@ function boardBadge(cell,meta){
   b.className='movebadge';
   b.style.background=meta.color;
   b.src=meta.img; b.alt=meta.label; b.title=meta.label;
+  b.onerror=()=>iconFallback(b,meta);
   b.style.width=b.style.height=b.style.minWidth=bs+'px';
   b.style.borderWidth=Math.max(2,Math.round(bs*0.08))+'px';
   b.style.top=Math.round(-bs*0.18)+'px';
@@ -911,7 +919,7 @@ function showJudge(san,sq,cat){
   render();
   const mcat=CATS[cat];
   const jt=document.getElementById('judgeText');
-  if(jt)jt.innerHTML=`Langkah Anda <b>${san}</b> <img class="rs-icon-inline" src="${mcat.img}" alt="${mcat.label}" title="${mcat.label}">`;
+  if(jt)jt.innerHTML=`Langkah Anda <b>${san}</b> <img class="rs-icon-inline" src="${mcat.img}" alt="${mcat.label}" title="${mcat.label}" onerror="iconFallback(this,'${cat}')">`;
 }
 function clearJudge(){
   liveBadge=null; pendingJudge=null;
@@ -1343,22 +1351,36 @@ function extractGameMeta(pgn, sans){
 
 /* ---------- Metadata klasifikasi kualitas langkah ---------- */
 const CATS={
-    brilliant:{label:'Brilian',icon:'!!',img:'brilliant.png',color:'#1aa6a6',group:'good'},
-great:{label:'Bagus',icon:'!',img:'great.png',color:'#3b8fd4',group:'good'},
-best:{label:'Terbaik',icon:'★',img:'best.png',color:'#5fb35f',group:'good'},
-excellent:{label:'Sangat Baik',icon:'✓',img:'excellent.png',color:'#8ab84a',group:'good'},
-good:{label:'Baik',icon:'○',img:'good.png',color:'#a9b34a',group:'good'},
-book:{label:'Buku',icon:'▦',img:'book.png',color:'#b07a3c',group:'good'},
-inaccuracy:{label:'Tidak Akurat',icon:'?!',img:'inaccuracy.png',color:'#e0c04a',group:'bad'},
-mistake:{label:'Kesalahan',icon:'?',img:'mistake.png',color:'#e08a3c',group:'bad'},
-miss:{label:'Terlewat',icon:'✗',img:'miss.png',color:'#e0654a',group:'bad'},
-blunder:{label:'Blunder',icon:'??',img:'blunder.png',color:'#d24a4a',group:'bad'},
+  brilliant:{label:'Brilian',icon:'!!',img:'logo_fahriengine/brilliant.png',color:'#1aa6a6',group:'good'},
+  great:{label:'Bagus',icon:'!',img:'logo_fahriengine/great.png',color:'#3b8fd4',group:'good'},
+  best:{label:'Terbaik',icon:'★',img:'logo_fahriengine/best.png',color:'#5fb35f',group:'good'},
+  excellent:{label:'Sangat Baik',icon:'✓',img:'logo_fahriengine/excellent.png',color:'#8ab84a',group:'good'},
+  good:{label:'Baik',icon:'○',img:'logo_fahriengine/good.png',color:'#a9b34a',group:'good'},
+  book:{label:'Buku',icon:'▦',img:'logo_fahriengine/book.png',color:'#b07a3c',group:'good'},
+  inaccuracy:{label:'Tidak Akurat',icon:'?!',img:'logo_fahriengine/inaccuracy.png',color:'#e0c04a',group:'bad'},
+  mistake:{label:'Kesalahan',icon:'?',img:'logo_fahriengine/mistake.png',color:'#e08a3c',group:'bad'},
+  miss:{label:'Terlewat',icon:'✗',img:'logo_fahriengine/miss.png',color:'#e0654a',group:'bad'},
+  blunder:{label:'Blunder',icon:'??',img:'logo_fahriengine/blunder.png',color:'#d24a4a',group:'bad'},
 };
 const GOOD_ORDER=['brilliant','great','best','excellent','good','book'];
 const BAD_ORDER=['inaccuracy','mistake','blunder','miss'];
 const ALL_ORDER=GOOD_ORDER.concat(BAD_ORDER);
 const PHASE_LABEL={opening:'Pembukaan',middlegame:'Permainan Tengah',endgame:'Permainan Akhir'};
 const PHASE_ORDER=['opening','middlegame','endgame'];
+/* Jika berkas gambar label langkah belum ada/nama-nya belum cocok, jangan biarkan ikon hilang begitu
+   saja — tampilkan lencana bulat berwarna dengan simbol sebagai cadangan, memakai ukuran & posisi
+   (inline style) yang sama persis dengan elemen <img> aslinya. */
+function iconFallback(img,metaOrKey){
+  const m=(typeof metaOrKey==='string')?CATS[metaOrKey]:metaOrKey;
+  if(!m||!img||!img.parentNode)return;
+  const span=document.createElement('span');
+  span.className=img.className+' icon-fallback';
+  span.style.cssText=img.style.cssText;
+  span.style.background=m.color;
+  span.title=m.label;
+  span.textContent=m.icon;
+  img.replaceWith(span);
+}
 const PVAL={p:1,n:3,b:3,r:5,q:9,k:0};
 /* win% dari centipawn — model Lichess */
 const winPct=cp=>50+50*(2/(1+Math.exp(-0.00368208*Math.max(-10000,Math.min(10000,cp))))-1);
@@ -1646,7 +1668,7 @@ function renderReview(){
     return `<div class="rs-row">
       <span class="rs-label">${m.label}</span>
       <span class="rs-count">${counts.w[c]}</span>
-      <img class="rs-icon" src="${m.img}" alt="${m.label}" title="${m.label}">
+      <img class="rs-icon" src="${m.img}" alt="${m.label}" title="${m.label}" onerror="iconFallback(this,'${c}')">
       <span class="rs-count">${counts.b[c]}</span></div>`;
   }).join('');
 
@@ -1712,7 +1734,7 @@ function renderReview(){
         if(!cat) return `<span class="phase-grade-btn empty">—</span>`;
         const m=CATS[cat];
         return `<button type="button" class="phase-grade-btn" data-phase="${key}" data-side="${side}">
-          <img src="${m.img}" alt="${m.label}" title="${side==='w'?'Putih':'Hitam'} · ${m.label}"></button>`;
+          <img src="${m.img}" alt="${m.label}" title="${side==='w'?'Putih':'Hitam'} · ${m.label}" onerror="iconFallback(this,'${cat}')"></button>`;
       };
       return `<div class="phase-row">
         <span class="rs-label">${PHASE_LABEL[key]}</span>
@@ -1727,7 +1749,7 @@ function renderReview(){
   for(let i=0;i<fullHistory.length;i++){
     const d=reviewData[i]; const m=d?CATS[d.cat]:null;
     if(i%2===0)movesHtml+=`<span class="num">${i/2+1}.</span>`;
-    const badge=m?` <img class="rs-icon-inline" src="${m.img}" alt="${m.label}" title="${m.label}">`:'';
+    const badge=m?` <img class="rs-icon-inline" src="${m.img}" alt="${m.label}" title="${m.label}" onerror="iconFallback(this,'${d.cat}')">`:'';
     movesHtml+=`<span class="mv" data-ply="${i+1}">${fullHistory[i]}${badge}</span>`;
   }
   const shareBtn=reviewAccuracy?`<button class="btn" id="shareBtn" style="width:100%;margin:10px 0 0">📤 Bagikan kartu laporan</button>`:'';
@@ -1759,7 +1781,7 @@ function showPhaseAccuracy(phase,side){
   const acc=gameAccFor(idxs);
   const cat=phaseGradeCat(acc);
   const m=cat?CATS[cat]:null;
-  box.innerHTML=`<div class="ld-head">${m?`<img src="${m.img}" alt="${m.label}">`:''}<b>${PHASE_LABEL[phase]} · ${side==='w'?'Putih':'Hitam'}</b>
+  box.innerHTML=`<div class="ld-head">${m?`<img src="${m.img}" alt="${m.label}" onerror="iconFallback(this,'${cat}')">`:''}<b>${PHASE_LABEL[phase]} · ${side==='w'?'Putih':'Hitam'}</b>
       <button type="button" class="ld-close" id="ldClose">×</button></div>
     <div class="ld-stats"><span>Akurasi fase ini: <b>${acc==null?'—':acc.toFixed(1)+'%'}</b>${m?` · ${m.label}`:''}</span>
     <span>${idxs.length} langkah dihitung pada fase ini</span></div>`;
